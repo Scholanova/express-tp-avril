@@ -269,11 +269,11 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author language is neither french nor english', () => {
+    context('when the author language is neither french nor english', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'german' }
+        authorData = { name: 'JJRR', pseudo: 'JJRR', email: 'jj@rousseau.ch', language: 'german' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
