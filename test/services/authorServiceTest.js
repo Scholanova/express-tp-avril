@@ -42,7 +42,7 @@ describe('authorService', () => {
       })
     })
 
-    context('when the author name is missing', () => {
+    context.skip('when the author name is missing', () => {
 
       beforeEach(() => {
         // given
