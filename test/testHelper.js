@@ -5,6 +5,7 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const sinon = require('sinon')
 const models  = require('../lib/models');
+const factory  = require('./factory');
 chai.use(chaiHttp)
 chai.use(require('sinon-chai'));
 chai.use(require('chai-as-promised'));
@@ -22,5 +23,6 @@ afterEach(() => {
 module.exports = {
   expect,
   request,
-  sinon
+  sinon,
+  factory
 };
