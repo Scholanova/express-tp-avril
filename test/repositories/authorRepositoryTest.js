@@ -105,32 +105,48 @@ describe('authorRepository', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
     let result
+    
 
     context('when there is are authors for that language in the repository, only some for other language', () => {
 
       beforeEach(async () => {
         // given
-
+        let authorData = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language:'french' }
+        await authorRepository.create(authorData)
         // when
+        result = await authorRepository.listForLanguage('english')
       })
 
       it('should return an empty list', () => {
         // then
+        expect(result).to.be.empty
       })
     })
 
     context('when there are two authors in the repository for that language and some for other languages', () => {
-
+      let author1
+      let author2
       beforeEach(async () => {
         // given
-
+        let authorData = { name: 'Jean-Paul Trosh', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language:'french' }
+        let authorData2 = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language:'french' }
+        let authorData3 = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language:'english' }
+        author1 = await authorRepository.create(authorData)
+        author2 = await authorRepository.create(authorData2)
+        await authorRepository.create(authorData3)
         // when
+        result = await authorRepository.listForLanguage('french')
       })
 
       it('should return a list with the two authors', () => {
         // then
+        const author1Value = author1.get()
+        const author2Value = author2.get()
+        const resultValues = result.map((author) => author.get())
+
+        expect(resultValues).to.deep.equal([author1Value, author2Value])
       })
     })
   })
