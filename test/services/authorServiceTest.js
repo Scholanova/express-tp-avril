@@ -16,91 +16,91 @@ describe('authorService', () => {
       sinon.stub(authorRepository, 'create')
     })
 
-    // context('when the author data is valid', () => {
+    context('when the author data is valid', () => {
 
-    //   let author
+      let author
 
-    //   beforeEach(() => {
-    //     // given
-    //     authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' }
-    //     author = new Author(authorData)
-    //     authorRepository.create.resolves(author)
+      beforeEach(() => {
+        // given
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        author = new Author(authorData)
+        authorRepository.create.resolves(author)
 
-    //     // when
-    //     authorCreationPromise = authorService.create(authorData)
-    //   })
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
 
-    //   // then
-    //   it('should call the author Repository with the creation data', async () => {
-    //     // then
-    //     await authorCreationPromise.catch(() => {})
-    //     expect(authorRepository.create).to.have.been.calledWith(authorData)
-    //   })
-    //   it('should resolve with the created author from reprository', () => {
-    //     // then
-    //     return expect(authorCreationPromise).to.eventually.equal(author)
-    //   })
-    // })
+      // then
+      it('should call the author Repository with the creation data', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.have.been.calledWith(authorData)
+      })
+      it('should resolve with the created author from reprository', () => {
+        // then
+        return expect(authorCreationPromise).to.eventually.equal(author)
+      })
+    })
 
-    // context('when the author name is missing', () => {
+    context('when the author name is missing', () => {
 
-    //   beforeEach(() => {
-    //     // given
-    //     authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch' }
+      beforeEach(() => {
+        // given
+        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch' }
 
-    //     // when
-    //     authorCreationPromise = authorService.create(authorData)
-    //   })
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
 
-    //   it('should not call the author Repository', async () => {
-    //     // then
-    //     await authorCreationPromise.catch(() => {})
-    //     expect(authorRepository.create).to.not.have.been.called
-    //   })
-    //   it('should reject with a ValidationError error about missing name', () => {
-    //     // then
-    //     const expectedErrorDetails = [{
-    //       message: '"name" is required',
-    //       path: ['name'],
-    //       type: 'any.required',
-    //       context: { label: 'name', key: 'name' }
-    //     }]
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about missing name', () => {
+        // then
+        const expectedErrorDetails = [{
+          message: '"name" is required',
+          path: ['name'],
+          type: 'any.required',
+          context: { label: 'name', key: 'name' }
+        }]
 
-    //     return expect(authorCreationPromise)
-    //       .to.eventually.be.rejectedWith(Joi.ValidationError)
-    //       .with.deep.property('details', expectedErrorDetails)
-    //   })
-    // })
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
+    })
 
-    // context('when the author name is empty', () => {
+    context('when the author name is empty', () => {
 
-    //   beforeEach(() => {
-    //     // given
-    //     authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+      beforeEach(() => {
+        // given
+        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch' }
 
-    //     // when
-    //     authorCreationPromise = authorService.create(authorData)
-    //   })
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
 
-    //   it('should not call the author Repository', async () => {
-    //     // then
-    //     await authorCreationPromise.catch(() => {})
-    //     expect(authorRepository.create).to.not.have.been.called
-    //   })
-    //   it('should reject with a ValidationError error about missing name', () => {
-    //     // then
-    //     const expectedErrorDetails = [{
-    //       message: '"name" is not allowed to be empty',
-    //       path: ['name'],
-    //       type: 'string.empty',
-    //       context: { label: 'name', key: 'name', value: '' }
-    //     }]
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about missing name', () => {
+        // then
+        const expectedErrorDetails = [{
+          message: '"name" is not allowed to be empty',
+          path: ['name'],
+          type: 'string.empty',
+          context: { label: 'name', key: 'name', value: '' }
+        }]
 
-    //     return expect(authorCreationPromise)
-    //       .to.eventually.be.rejectedWith(Joi.ValidationError)
-    //       .with.deep.property('details', expectedErrorDetails)
-    //   })
-    // })
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
+    })
 
     context('when the author name is to short', () => {
 
