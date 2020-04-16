@@ -42,11 +42,11 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author name is missing', () => {
+    context('when the author name is missing', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
