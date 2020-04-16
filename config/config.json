@@ -2,7 +2,7 @@
   "development": {
     "username": "postgres",
     "password": "postgres",
-    "database": "scholanova_express_3_development",
+    "database": "scholanova_express_development",
     "host": "127.0.0.1",
     "dialect": "postgres",
     "logging": true
@@ -10,7 +10,7 @@
   "test": {
     "username": "postgres",
     "password": "postgres",
-    "database": "scholanova_express_3_test",
+    "database": "scholanova_express_test",
     "host": "127.0.0.1",
     "dialect": "postgres",
     "logging": false
@@ -18,7 +18,7 @@
   "production": {
     "username": "postgres",
     "password": "postgres",
-    "database": "scholanova_express_3_production",
+    "database": "scholanova_express_production",
     "host": "127.0.0.1",
     "dialect": "postgres",
     "logging": true
