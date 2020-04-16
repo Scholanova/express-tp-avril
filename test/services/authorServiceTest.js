@@ -294,25 +294,54 @@ describe('authorService', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
-    describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
+    describe('listForLanguage', () => {
       let result
 
+
+
       context.skip('when the author language is missing', () => {
-        it('should not call the author Repository', async () => {
+        beforeEach(async () => {
+        // given
+       //null
+
+        // when
+        list = authorService.listForLanguage(null);
+        it('should not call the author Repository', async () => {  
           // then
+          await list.catch(() => {})
+        expect(authorRepository.listForLanguage).to.not.have.been.calledWith(null)
         })
         it('should reject with a ValidationError error about missing language', () => {
           // then
+        return expect(list)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('message', '"language" is required'
+)
+      })
         })
       })
       context.skip('when the author language is neither french nor english', () => {
 
+ beforeEach(() => {
+        // given
+        lang = 'other'
+
+        // when
+        lists = authorService.listForLanguage(lang);
+      })
+
         it('should not call the author Repository', async () => {
           // then
+          await lists.catch(() => {})
+        expect(authorRepository.listForLanguage).to.not.have.been.calledWith(lang)
         })
         it('should reject with a ValidationError error about unsupported language', () => {
           // then
+
+        return expect(lists)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('message', `"language" ${lang} is unsupported`)
         })
       })
       context.skip('when the author language is either french or english', () => {
