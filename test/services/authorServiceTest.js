@@ -314,7 +314,7 @@ describe('authorService', () => {
       beforeEach(() => {
         // given
         // when
-        authorListForLanguagePromise = authorService.listForLanguage(undefined)
+        authorListForLanguagePromise = authorService.listForLanguage({ language: undefined })
       })
 
       it('should not call the author Repository', async () => {
@@ -345,7 +345,7 @@ describe('authorService', () => {
         invalidLanguage = 'german'
 
         // when
-        authorListForLanguagePromise = authorService.listForLanguage(invalidLanguage)
+        authorListForLanguagePromise = authorService.listForLanguage({language: invalidLanguage })
       })
 
       it('should not call the author Repository', async () => {
@@ -379,7 +379,7 @@ describe('authorService', () => {
         validLanguage = 'french'
 
         // when
-        authorListForLanguagePromise = authorService.listForLanguage(validLanguage)
+        authorListForLanguagePromise = authorService.listForLanguage({ language: validLanguage })
       })
 
       it('should call the author Repository with the language', async () => {
