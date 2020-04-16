@@ -269,11 +269,11 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author language is neither french nor english', () => {
+    context('when the author language is neither french nor english', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'german' }
+        authorData = { name: 'Jean', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'german' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -300,35 +300,94 @@ describe('authorService', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
-    describe.skip('listForLanguage', () => {
-      let result
+  describe('listForLanguage', () => {
+    //describe('listForLanguage', () => {
+      //let result
 
-      context.skip('when the author language is missing', () => {
-        it('should not call the author Repository', async () => {
-          // then
+      let language
+      let authorListForLanguagePromise
+  
+      beforeEach(() => {
+        sinon.stub(authorRepository, 'listForLanguage')
+      })
+
+      context('when the author language is missing', () => {
+
+        beforeEach(async () => {
+          // given
+          language = null
+  
+          // when
+          authorListForLanguagePromise = authorService.listForLanguage(language)
         })
+
+        it('should not call the author Repository', async () => {
+         // then
+         await authorListForLanguagePromise.catch(() => {})
+         expect(authorRepository.listForLanguage).to.not.have.been.called
+        })
+
         it('should reject with a ValidationError error about missing language', () => {
           // then
+          const errorMessage = '"language" is required' 
+  
+          return expect(authorListForLanguagePromise)
+            .to.eventually.be.rejectedWith(Joi.ValidationError)
+            .with.deep.property('message', errorMessage)
         })
       })
-      context.skip('when the author language is neither french nor english', () => {
+      context('when the author language is neither french nor english', () => {
 
+        beforeEach(async () => {
+          // given
+          
+          jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.fr', language: 'french' }
+          ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'english'}
+          language = "german"
+
+          // when
+          authorListForLanguagePromise = authorService.listForLanguage(language)
+        })
         it('should not call the author Repository', async () => {
           // then
+          await authorListForLanguagePromise.catch(() => {})
+          expect(authorRepository.listForLanguage).to.not.have.been.called
         })
         it('should reject with a ValidationError error about unsupported language', () => {
           // then
+          const errorMessage = '"language" must be "french" or "english"' 
+  
+          return expect(authorListForLanguagePromise)
+            .to.eventually.be.rejectedWith(Joi.ValidationError)
+            .with.deep.property('message', errorMessage)
         })
       })
-      context.skip('when the author language is either french or english', () => {
+      context('when the author language is either french or english', () => {
+
+        beforeEach(async () => {
+          // given
+          
+          jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.fr', language: 'french' }
+          ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'english'}
+
+          authorRepository.listForLanguage.resolves([jjrData, ppData])
+
+          language = "french"
+
+          // when
+          authorListForLanguagePromise = authorService.listForLanguage(language)
+        })
+
         it('should call the author Repository with the language', async () => {
           // then
+          await authorListForLanguagePromise.catch(() => {})
+          expect(authorRepository.listForLanguage).to.have.been.calledWith(language)
         })
-        it('should resolve with the authors listed from reprository', () => {
+        it('should resolve with the authors listed from repository', () => {
           // then
+          return expect(authorListForLanguagePromise).to.eventually.be.deep.equal([jjrData, ppData])
         })
       })
-    })
+   // })
   })
 })
