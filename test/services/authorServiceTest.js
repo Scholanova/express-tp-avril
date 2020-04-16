@@ -22,7 +22,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
         author = new Author(authorData)
         authorRepository.create.resolves(author)
 
@@ -46,7 +46,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -76,7 +76,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -102,11 +102,11 @@ describe('authorService', () => {
       })
     })
 
-    context('when the author name is too short', () => {
+    context('when the author name is to short', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -135,7 +135,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined }
+        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined, language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -165,7 +165,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'not an email' }
+        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'not an email', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -195,7 +195,7 @@ describe('authorService', () => {
       )
     })
 
-    context('when the author name and email are missing', () => {
+    context('when the author name and email and language are missing', () => {
 
       beforeEach(() => {
         // given
@@ -210,19 +210,25 @@ describe('authorService', () => {
         await authorCreationPromise.catch(() => {})
         expect(authorRepository.create).to.not.have.been.called
       })
-      it('should reject with a ValidationError error about missing email', () => {
+      it('should reject with a ValidationError error about missing email, name and language', () => {
         // then
         const expectedErrorDetails = [
           {
-            context: { key: 'name', label: 'name' },
+            context: { key: 'name', label: 'name'},
             message: '"name" is required',
             path: ['name'],
             type: 'any.required'
           },
           {
-            context: { key: 'email', label: 'email' },
+            context: { key: 'email', label: 'email'},
             message: '"email" is required',
             path: ['email'],
+            type: 'any.required'
+          },
+          {
+            context: { key: 'language', label: 'language'},
+            message: '"language" is required',
+            path: ['language'],
             type: 'any.required'
           }
         ]
@@ -233,11 +239,11 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author language is missing', () => {
+    context('when the author language is missing', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
+        authorData = { name: 'JJRR', pseudo: 'JJRR', email: 'jj@rousseau.ch', language: undefined }
 
         // when
         authorCreationPromise = authorService.create(authorData)
