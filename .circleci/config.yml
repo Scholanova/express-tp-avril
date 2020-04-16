@@ -8,7 +8,7 @@ executors:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: scholanova_express_3_test
+          POSTGRES_DB: scholanova_express_test
 
 jobs:
   test_node:
