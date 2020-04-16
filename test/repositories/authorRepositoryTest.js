@@ -40,7 +40,7 @@ describe('authorRepository', () => {
 
     beforeEach(async () => {
       // given
-      authorData = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr' }
+      authorData = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language: 'french' }
 
       // when
       createdAuthor = await authorRepository.create(authorData)
@@ -52,6 +52,7 @@ describe('authorRepository', () => {
 
       expect(createdAuthorValue.name).to.equal(authorData.name)
       expect(createdAuthorValue.age).to.equal(authorData.age)
+      expect(createdAuthorValue.language).to.equal(authorData.language)
 
       retrievedAuthor = await authorRepository.get(createdAuthor.id)
       const retrievedAuthorValue = retrievedAuthor.get()
@@ -85,8 +86,8 @@ describe('authorRepository', () => {
 
       beforeEach(async () => {
         // given
-        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' }
-        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk' }
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'english' }
         author1 = await authorRepository.create(jjrData)
         author2 = await authorRepository.create(ppData)
 
