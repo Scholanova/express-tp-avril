@@ -22,7 +22,8 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+
         author = new Author(authorData)
         authorRepository.create.resolves(author)
 
@@ -46,7 +47,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -76,7 +77,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -106,7 +107,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -135,7 +136,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -199,7 +200,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = {}
+        authorData = {language:'french'}
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -233,11 +234,11 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author language is missing', () => {
+    context('when the author language is missing', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
+        authorData = { name: 'JeanJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -294,11 +295,11 @@ describe('authorService', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
-    describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
+    describe('listForLanguage', () => {
       let result
 
-      context.skip('when the author language is missing', () => {
+      context('when the author language is missing', () => {
         it('should not call the author Repository', async () => {
           // then
         })
@@ -306,7 +307,7 @@ describe('authorService', () => {
           // then
         })
       })
-      context.skip('when the author language is neither french nor english', () => {
+      context('when the author language is neither french nor english', () => {
 
         it('should not call the author Repository', async () => {
           // then
@@ -315,7 +316,7 @@ describe('authorService', () => {
           // then
         })
       })
-      context.skip('when the author language is either french or english', () => {
+      context('when the author language is either french or english', () => {
         it('should call the author Repository with the language', async () => {
           // then
         })
