@@ -112,12 +112,13 @@ describe('authorRepository', () => {
 
       beforeEach(async () => {
         // given
-
+        result = await authorRepository.listForLanguage('french')
         // when
       })
 
       it('should return an empty list', () => {
         // then
+        expect(result).to.be.empty
       })
     })
 
@@ -125,12 +126,24 @@ describe('authorRepository', () => {
 
       beforeEach(async () => {
         // given
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch',language: 'french' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk',language: 'french' }
+        const epData = { name: 'edouar Pullman', pseudo: 'Edouar', email: 'edouard@pullman.co.uk',language: 'USA' }
+        author1 = await authorRepository.create(jjrData)
+        author2 = await authorRepository.create(ppData)
+        author3 = await authorRepository.create(epData)
 
         // when
+        result = await authorRepository.listForLanguage('french')
       })
 
       it('should return a list with the two authors', () => {
         // then
+        const author1Value = author1.get()
+        const author2Value = author2.get()
+        const resultValues = result.map((author) => author.get())
+
+        expect(resultValues).to.deep.equal([author1Value, author2Value])
       })
     })
   })
