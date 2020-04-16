@@ -9,7 +9,7 @@
     "db:init": "npx sequelize db:create",
     "db:migrate": "npx sequelize db:migrate",
     "db:seed": "npx sequelize db:seed:all",
-    "db:test:init": "NODE_ENV=test npx sequelize db:create"
+    "db:test:init": "SET NODE_ENV=test&& npx sequelize db:create"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",

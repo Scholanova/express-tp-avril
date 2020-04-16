@@ -66,3 +66,6 @@ typings/
 
 # system
 .DS_Store
+
+#config files
+config/config.json
