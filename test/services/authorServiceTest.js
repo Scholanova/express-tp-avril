@@ -102,7 +102,7 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author name is to short', () => {
+    context('when the author name is too short', () => {
 
       beforeEach(() => {
         // given
