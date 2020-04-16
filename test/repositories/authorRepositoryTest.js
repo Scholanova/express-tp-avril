@@ -106,32 +106,61 @@ describe('authorRepository', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
+
     let result
 
-    context('when there is are authors for that language in the repository, only some for other language', () => {
+    context('when there is no authors for that language in the repository, only some for other language', () => {
 
       beforeEach(async () => {
         // given
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'EN' }
+        author1 = await authorRepository.create(jjrData)
+        author2 = await authorRepository.create(ppData)
 
         // when
+        result = await authorRepository.listForLanguage('UK');
       })
 
       it('should return an empty list', () => {
         // then
+        expect(result).to.be.empty;
       })
     })
 
     context('when there are two authors in the repository for that language and some for other languages', () => {
 
+      let author1
+      let author2
+      let author3
+      let author4
+      let author5
+
       beforeEach(async () => {
         // given
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'FR' }
+        const eaaData = { name: 'Edwin Abbott Abbott', pseudo: 'E. Bott', email: 'edwin@abbott.en', language: 'EN' }
+        const paData = { name: 'Paul Ableman', pseudo: 'PA', email: 'paul@ableman.en', language: 'EN' }
+        const haData = { name: 'Harriet Arbuthnot', pseudo: 'Arbut', email: 'harriet@arbuthnot.co.uk', language: 'UK' }
+        author1 = await authorRepository.create(jjrData)
+        author2 = await authorRepository.create(ppData)
+        author3 = await authorRepository.create(eaaData)
+        author4 = await authorRepository.create(paData)
+        author5 = await authorRepository.create(haData)
 
         // when
+        result = await authorRepository.listForLanguage('FR')
       })
 
       it('should return a list with the two authors', () => {
         // then
+        const author1Value = author1.get()
+        const author2Value = author2.get()
+        const resultValues = result.map((author) => author.get())
+
+        expect(resultValues).to.deep.equal([author1Value, author2Value])
       })
     })
   })
