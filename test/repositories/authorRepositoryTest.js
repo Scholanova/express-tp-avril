@@ -115,12 +115,12 @@ describe('authorRepository', () => {
       beforeEach(async () => {
         // given
         const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR' }
-        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'EN' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'FR' }
         author1 = await authorRepository.create(jjrData)
         author2 = await authorRepository.create(ppData)
 
         // when
-        result = await authorRepository.listForLanguage('UK');
+        result = await authorRepository.listForLanguage('EN');
       })
 
       it('should return an empty list', () => {
@@ -143,7 +143,7 @@ describe('authorRepository', () => {
         const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'FR' }
         const eaaData = { name: 'Edwin Abbott Abbott', pseudo: 'E. Bott', email: 'edwin@abbott.en', language: 'EN' }
         const paData = { name: 'Paul Ableman', pseudo: 'PA', email: 'paul@ableman.en', language: 'EN' }
-        const haData = { name: 'Harriet Arbuthnot', pseudo: 'Arbut', email: 'harriet@arbuthnot.co.uk', language: 'UK' }
+        const haData = { name: 'Harriet Arbuthnot', pseudo: 'Arbut', email: 'harriet@arbuthnot.co.uk', language: 'EN' }
         author1 = await authorRepository.create(jjrData)
         author2 = await authorRepository.create(ppData)
         author3 = await authorRepository.create(eaaData)
@@ -163,5 +163,6 @@ describe('authorRepository', () => {
         expect(resultValues).to.deep.equal([author1Value, author2Value])
       })
     })
+    
   })
 })
