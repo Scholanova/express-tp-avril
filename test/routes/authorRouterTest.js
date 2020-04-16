@@ -153,20 +153,20 @@ describe('authorRouter', () => {
 
       beforeEach(async () => {
         // given
-        author = new Author({ id: 12, name: 'Ben', age: 3 })
+        author = new Author({ id: 12, name: 'Ben', age: 3,language: 'french' })
         authorService.create.resolves(author)
 
         // when
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net' })
+          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net','language': 'french' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
-        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR' })
+        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR',language:'french' })
       })
 
       it('should succeed with a status 302', () => {
@@ -204,14 +204,14 @@ describe('authorRouter', () => {
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net' })
+          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net',language:'french' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
         expect(authorService.create).to.have.been.calledWith({
-          name: previousNameValue, pseudo: undefined, email: 'test@example.net'
+          name: previousNameValue, pseudo: undefined, email: 'test@example.net',language:'french'
         })
       })
 
