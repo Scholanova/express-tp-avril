@@ -106,19 +106,24 @@ describe('authorRepository', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
     let result
 
-    context('when there is are authors for that language in the repository, only some for other language', () => {
+    context('when there are no authors for that language in the repository, only some for other language', () => {
 
       beforeEach(async () => {
         // given
-
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'english' }
+        author1 = await authorRepository.create(jjrData)
+        author2 = await authorRepository.create(ppData)
         // when
+        result = await authorRepository.listForLanguage('german');
       })
 
       it('should return an empty list', () => {
         // then
+        expect(result).to.be.empty;
       })
     })
 
@@ -126,12 +131,25 @@ describe('authorRepository', () => {
 
       beforeEach(async () => {
         // given
-
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.fr', language: 'french' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'english'}
+        const gdmData = { name: 'Guy de Maupassant', pseudo: 'GDM', email: 'gd@maupassant.fr', language: 'french' }
+        const fnData = { name: 'Friedrich Nietzsche', pseudo: 'FN', email: 'friedich@nietzsche.de', language: 'german' }
+        author1 = await authorRepository.create(jjrData)
+        author2 = await authorRepository.create(ppData)
+        author3 = await authorRepository.create(gdmData)
+        author4 = await authorRepository.create(fnData)
         // when
+        result = await authorRepository.listForLanguage('french');
       })
 
       it('should return a list with the two authors', () => {
         // then
+        const author1Value = author1.get()
+        const author3Value = author3.get()
+        const resultValues = result.map((author) => author.get())
+
+        expect(resultValues).to.deep.equal([author1Value, author3Value])
       })
     })
   })
