@@ -1,5 +1,5 @@
 const Joi = require('@hapi/joi')
-const { expect, request, sinon } = require('../testHelper')
+const { expect, request, sinon, factory } = require('../testHelper')
 const { ResourceNotFoundError } = require('../../lib/errors')
 const app = require('../../lib/app')
 const authorRepository = require('../../lib/repositories/authorRepository')
@@ -41,9 +41,10 @@ describe('authorRouter', () => {
 
     context('when there are authors in the repository', () => {
 
+      let author
       beforeEach(async () => {
         // given
-        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' })
+        author = factory.createAuthor()
         authorRepository.listAll.resolves([author])
 
         // when
@@ -58,7 +59,7 @@ describe('authorRouter', () => {
       it('should return an html list with author info inside', () => {
         // then
         expect(response).to.be.html
-        expect(response.text).to.contain('Jean-Jacques Rousseau (JJR)')
+        expect(response.text).to.contain(`${author.name} (${author.pseudo})`)
       })
     })
   })
@@ -107,10 +108,7 @@ describe('authorRouter', () => {
       beforeEach(async () => {
         // given
         authorId = '123'
-        const authorData = {
-          id: authorId, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch'
-        }
-        author = new Author(authorData)
+        author = factory.createAuthor({ id: authorId })
 
         authorRepository.get.resolves(author)
 
@@ -135,6 +133,7 @@ describe('authorRouter', () => {
         expect(response.text).to.contain(`Name: ${author.name}`)
         expect(response.text).to.contain(`Pseudo: ${author.pseudo}`)
         expect(response.text).to.contain(`Email: ${author.email}`)
+        expect(response.text).to.contain(`Language: ${author.language}`)
       })
     })
   })
@@ -150,23 +149,42 @@ describe('authorRouter', () => {
     context('when the author creation succeeds', () => {
 
       let author
+      let authorName
+      let authorPseudo
+      let authorEmail
+      let authorLanguage
 
       beforeEach(async () => {
         // given
-        author = new Author({ id: 12, name: 'Ben', age: 3 })
+        authorName = 'Émile Zola'
+        authorPseudo = 'L’Accusateur'
+        authorEmail = 'emile@zola.fr'
+        authorLanguage = 'french'
+
+        author = factory.createAuthor({
+          name: authorName,
+          pseudo: authorPseudo,
+          email: authorEmail,
+          language: authorLanguage
+        })
         authorService.create.resolves(author)
 
         // when
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net' })
+          .send({ 'name': authorName, 'pseudo': authorPseudo, 'email': authorEmail, 'language': authorLanguage })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
-        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR' })
+        expect(authorService.create).to.have.been.calledWith({
+          name: authorName,
+          pseudo: authorPseudo,
+          email: authorEmail,
+          language: authorLanguage
+        })
       })
 
       it('should succeed with a status 302', () => {
@@ -185,7 +203,10 @@ describe('authorRouter', () => {
       let validationError
       let errorMessage
       let errorDetails
-      let previousNameValue
+
+      let authorName
+      let authorPseudo
+      let authorLanguage
 
       beforeEach(async () => {
         // given
@@ -199,19 +220,22 @@ describe('authorRouter', () => {
         validationError = new Joi.ValidationError(errorMessage, errorDetails, undefined)
         authorService.create.rejects(validationError)
 
-        previousNameValue = 'Some special name for a author'
+        authorName = 'Émile Zola'
+        authorPseudo = 'L’Accusateur'
+        authorLanguage = 'french'
+
         // when
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net' })
+          .send({ 'name': authorName, 'pseudo': authorPseudo, 'email': undefined, 'language': authorLanguage })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
         expect(authorService.create).to.have.been.calledWith({
-          name: previousNameValue, pseudo: undefined, email: 'test@example.net'
+          'name': authorName, 'pseudo': authorPseudo, 'email': undefined, 'language': authorLanguage
         })
       })
 
@@ -224,8 +248,10 @@ describe('authorRouter', () => {
         // then
         expect(response).to.be.html
         expect(response.text).to.contain('New Author')
-        expect(response.text).to.contain("&#34;email&#34; is required")
-        expect(response.text).to.contain(previousNameValue)
+        expect(response.text).to.contain('&#34;email&#34; is required')
+        expect(response.text).to.contain(authorName)
+        expect(response.text).to.contain(authorPseudo)
+        expect(response.text).to.contain(authorLanguage)
       })
     })
   })
