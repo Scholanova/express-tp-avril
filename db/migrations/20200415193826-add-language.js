@@ -4,7 +4,7 @@ module.exports = {
       return queryInterface.addColumn(
         'Authors',
         'language',
-       Sequelize.BOOLEAN
+       Sequelize.STRING
       );
   
     },
