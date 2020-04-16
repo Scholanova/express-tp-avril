@@ -112,32 +112,56 @@ describe('authorRepository', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
     let result
 
-    context('when there is are authors for that language in the repository, only some for other language', () => {
+    context('when there is no authors for that language in the repository, only some for other language', () => {
+      let author1
+      let author2
+      let author3
 
       beforeEach(async () => {
         // given
-
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'english' }
+        const nkData = { name: 'noblesse kasa', pseudo: 'nobla', email: 'nk@nk.us', language: 'english' }
+        author1 = await authorRepository.create(jjrData)
+        author2 = await authorRepository.create(ppData)
+        author3 = await authorRepository.create(nkData)
         // when
+        result = await authorRepository.listForLanguage("allemand")
       })
 
       it('should return an empty list', () => {
         // then
+        expect(result).to.deep.equal([])
       })
     })
 
     context('when there are two authors in the repository for that language and some for other languages', () => {
-
+      let author1
+      let author2
+      let author3
       beforeEach(async () => {
         // given
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'allemand' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'allemand' }
+        const nkData = { name: 'noblesse kasa', pseudo: 'nobla', email: 'nk@nk.us', language: 'french' }
+        author1 = await authorRepository.create(jjrData)
+        author2 = await authorRepository.create(ppData)
+        author3 = await authorRepository.create(nkData)
 
         // when
+        result = await authorRepository.listForLanguage("allemand")
       })
 
       it('should return a list with the two authors', () => {
         // then
+        const author1Value = author1.get()
+        const author2Value = author2.get()
+        const resultValues = result.map((author) => author.get())
+
+        expect(resultValues).to.deep.equal([author1Value, author2Value])
       })
     })
   })
