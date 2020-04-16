@@ -293,4 +293,36 @@ describe('authorService', () => {
       })
     })
   })
+
+  describe.skip('listForLanguage', () => {
+    describe.skip('listForLanguage', () => {
+      let result
+
+      context.skip('when the author language is missing', () => {
+        it('should not call the author Repository', async () => {
+          // then
+        })
+        it('should reject with a ValidationError error about missing language', () => {
+          // then
+        })
+      })
+      context.skip('when the author language is neither french nor english', () => {
+
+        it('should not call the author Repository', async () => {
+          // then
+        })
+        it('should reject with a ValidationError error about unsupported language', () => {
+          // then
+        })
+      })
+      context.skip('when the author language is either french or english', () => {
+        it('should call the author Repository with the language', async () => {
+          // then
+        })
+        it('should resolve with the authors listed from reprository', () => {
+          // then
+        })
+      })
+    })
+  })
 })

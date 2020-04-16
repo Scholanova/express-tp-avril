@@ -104,4 +104,34 @@ describe('authorRepository', () => {
       })
     })
   })
+
+  describe.skip('listForLanguage', () => {
+    let result
+
+    context('when there is are authors for that language in the repository, only some for other language', () => {
+
+      beforeEach(async () => {
+        // given
+
+        // when
+      })
+
+      it('should return an empty list', () => {
+        // then
+      })
+    })
+
+    context('when there are two authors in the repository for that language and some for other languages', () => {
+
+      beforeEach(async () => {
+        // given
+
+        // when
+      })
+
+      it('should return a list with the two authors', () => {
+        // then
+      })
+    })
+  })
 })

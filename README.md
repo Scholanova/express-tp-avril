@@ -45,6 +45,23 @@ des limites de taille, format d'email, etc. `Joi` est une librairie que vous ris
 - Etape 5 - mettez à jour les données de tests du repository pour prendre en compte la nouvelle propriété `language`  
 - Etape 6 - mettez à jour les vues (list, show et new) et le router et ses tests pour prendre en compte la nouvelle propriété `language`  
     
+## PARTIE 2 - PERMETTRE DE FILTRER LES AUTEURS PAR LANGUE D'ÉCRITURE
+- Etape 7 - ajouter une fonction `listForLanguage` sur le repository pour pouvoir récupérer les auteurs qui ont comme langue 
+celle passée en paramètre 
+    - Dé-skippez les tests concernant la fonction `listForLanguage`
+    - N'oubliez pas de vérifier que tous les autres tests passent toujours
+- Étape 8 - ajouter une fonction `listForLanguage` sur le service pour pouvoir récupérer vérifier les paramètres d'appel au repository
+    - Dé-skippez les tests concernant la fonction `listForLanguage`
+    - N'oubliez pas de vérifier que tous les autres tests passent toujours
+- Étape 9 - ajouter deux pages et les méthodes associées sur le `authorRouter` pour pouvoir filter les auteurs par langue.
+    - Faites un formulaire sur l'url `/authors/filter` avec comme champ `language` pour passer en paramètre la langue de filtration.
+    Avec donc une méthode `GET` et une méthode `POST` sur cette url, pour pouvoir lire le paramètre récupéré. N'oubliez pas 
+    d'écrire de nouveaux tests sur la méthode `POST` (comme pour `/authors/new`)
+    - Vérifier que si le service renvoie une erreur, cette erreur s'affiche bien (comme pour `/authors/new`)
+    - Vérifier que si le service renvoie une liste d'auteurs, la liste des auteurs s'affichent sur `/authors/filter` 
+    (avec un message "No authors found" si la liste est vide) 
+    - N'oubliez pas de vérifier que tous les autres tests passent toujours avant de commitez
+
 ## AIDE POUR LA TRANSACTION
 
 Pour créer une nouvelle migration faites la commande suivante :
