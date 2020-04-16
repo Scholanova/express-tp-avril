@@ -117,7 +117,7 @@ describe('authorService', () => {
         await authorCreationPromise.catch(() => {})
         expect(authorRepository.create).to.not.have.been.called
       })
-      it('should reject with a ValidationError error about missing name', () => {
+      it('should reject with a ValidationError error about name being too short', () => {
         // then
         const expectedErrorDetails = [{
           message: '"name" length must be at least 4 characters long',
@@ -237,7 +237,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -267,7 +267,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'german' }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'german' }
 
         // when
         authorCreationPromise = authorService.create(authorData)

@@ -62,7 +62,34 @@ celle passée en paramètre
     (avec un message "No authors found" si la liste est vide) 
     - N'oubliez pas de vérifier que tous les autres tests passent toujours avant de commitez
 
-## AIDE POUR LA TRANSACTION
+## PARTIE 3 - AJOUTER DES LIVRES AUX AUTEURS
+On va ajouter une ressource nouvelle (le livre) au système.
+
+- Étape 10 - Création d'un livre (Repository)  
+    - Créez un nouveau service `bookRepository` avec son fichier de tests (vide pour l'instnt)
+    - Créez une migration pour créer une nouvelle table `books` avec les colonnes `title: String` 
+    et une référence clé étrangère à la table `authors` (colonne `authorId`)
+    - Créez un modèle `Books` 
+    - Créez un couple de fonctions `get` et `create` sur le `bookRepository` (en prenant pour exemple les tests de `authorRepository`)
+    Dans les tests, n'oubliez pas de créer un auteur et de l'insérer en base de donnée pour pouvoir lier un livre à un auteur.
+    La création doit échouer (il doit y avoir un test à ce sujet du coup) si l'id `authorId` du livre correspond à
+     un auteur qui n'existe pas en base de données.
+ - Étape 11 - Création d'un livre (Service)
+    - Créez un nouveau service `bookService` avec son fichier de tests (vide pour l'instant)
+    - Créez une nouvelle fonction `create` qui va appeler le respository si les données de création sont valides et 
+    une erreur de validation sinon. Le livre pour être valide doit avec un titre, et un auteur (propriété `authorId`). 
+    (il faut vérifier que l'id est présent dans les données et soit un interger, par contre la vérification de présence se 
+    fait par la base de donnée, au niveau du repository lors de la fonction `create` et n'est donc pas la responsabilité du service)
+ - Étape 12 - Visualisation des livres d'un auteur
+    - Ajouter une fonction `listForAuthor` au `bookRepository` (renvoie vide si pas de livre pour cet auteur, et ses livres sinon.)
+    - Ajouter sur la page `show` d'un auteur la liste de livres de l'auteur (url: `/authors/:id`)
+    - Modifier le fichier de seeds pour créer des livres aux auteurs. 
+ - Étape 13 - Création d'un formulaire de création de livre
+    - Ajouter un formulaire accessible par un lien depuis la page `show` d'un auteur pour créer un livre. 
+    L'URL sera de la forme `/authors/:id/books/new/`. Bien penser à ne pas donner à remplir à l'utilisateur l'id de l'auteur.
+    Le seul champ à remplir de la part de l'utilisteur est donc titre. Si le titre n'est pas rempli, une erreur doit être affichée. 
+    
+## AIDE POUR LA MIGRATION DE BASE DE DONNÉES
 
 Pour créer une nouvelle migration faites la commande suivante :
  
