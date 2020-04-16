@@ -229,4 +229,45 @@ describe('authorRouter', () => {
       })
     })
   })
+
+  describe('filter - POST', () => {
+
+    let response
+
+    beforeEach(() => {
+      sinon.stub(authorService, 'create')
+    })
+
+    context('when the author creation succeeds', () => {
+
+      let author
+
+      beforeEach(async () => {
+        // given
+        author = new Author({ id: 12, name: 'Ben', age: 3,language: 'french' })
+        authorService.create.resolves(author)
+
+        // when
+        response = await request(app)
+          .post('/authors/new')
+          .type('form')
+          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net','language': 'french' })
+          .redirects(0)
+      })
+
+      it('should call the service with author data', () => {
+        // then
+        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR',language:'french' })
+      })
+
+      it('should succeed with a status 302', () => {
+        // then
+        expect(response).to.have.status(302)
+      })
+
+      it('should redirect to show page', () => {
+        // then
+        expect(response).to.redirectTo(`/authors/${author.id}`)
+      })
+    })
 })
