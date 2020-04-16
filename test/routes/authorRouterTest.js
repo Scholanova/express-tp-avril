@@ -43,7 +43,7 @@ describe('authorRouter', () => {
 
       beforeEach(async () => {
         // given
-        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' })
+        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR' })
         authorRepository.listAll.resolves([author])
 
         // when
@@ -58,7 +58,7 @@ describe('authorRouter', () => {
       it('should return an html list with author info inside', () => {
         // then
         expect(response).to.be.html
-        expect(response.text).to.contain('Jean-Jacques Rousseau (JJR)')
+        expect(response.text).to.contain('FR Jean-Jacques Rousseau (JJR)')
       })
     })
   })
@@ -108,7 +108,7 @@ describe('authorRouter', () => {
         // given
         authorId = '123'
         const authorData = {
-          id: authorId, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch'
+          id: authorId, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR'
         }
         author = new Author(authorData)
 
@@ -133,6 +133,7 @@ describe('authorRouter', () => {
         expect(response).to.be.html
         expect(response.text).to.contain(`Author ${author.name}`)
         expect(response.text).to.contain(`Name: ${author.name}`)
+        expect(response.text).to.contain(`Language: ${author.language}`)
         expect(response.text).to.contain(`Pseudo: ${author.pseudo}`)
         expect(response.text).to.contain(`Email: ${author.email}`)
       })
@@ -153,20 +154,20 @@ describe('authorRouter', () => {
 
       beforeEach(async () => {
         // given
-        author = new Author({ id: 12, name: 'Ben', age: 3 })
+        author = new Author({ id: 12, name: 'Ben', age: 3, language: 'FR' })
         authorService.create.resolves(author)
 
         // when
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net' })
+          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net', 'language': 'FR' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
-        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR' })
+        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR', language: 'FR' })
       })
 
       it('should succeed with a status 302', () => {
@@ -204,14 +205,14 @@ describe('authorRouter', () => {
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net' })
+          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: 'FR' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
         expect(authorService.create).to.have.been.calledWith({
-          name: previousNameValue, pseudo: undefined, email: 'test@example.net'
+          name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: 'FR'
         })
       })
 
