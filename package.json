@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "start:dev": "nodemon ./bin/www",
-    "test": "mocha --recursive",
-    "db:init": "npx sequelize db:create",
-    "db:migrate": "npx sequelize db:migrate",
-    "db:seed": "npx sequelize db:seed:all",
-    "db:test:init": "NODE_ENV=test npx sequelize db:create"
+    "start:dev": "node ./node_modules/nodemon/bin/nodemon ./bin/www",
+    "test": "node ./node_modules/mocha/bin/_mocha --recursive",
+    "db:init": "node ./node_modules/sequelize-cli/lib/sequelize db:create",
+    "db:migrate": "node ./node_modules/sequelize-cli/lib/sequelize db:migrate",
+    "db:seed": "node ./node_modules/sequelize-cli/lib/sequelize db:seed:all",
+    "db:test:init": "set NODE_ENV=test&& node ./node_modules/sequelize-cli/lib/sequelize db:create"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
