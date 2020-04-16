@@ -32,5 +32,21 @@
     "sequelize-cli": "^5.5.1",
     "sinon": "^9.0.1",
     "sinon-chai": "^3.5.0"
-  }
+  },
+  "description": "Nom de l'élève : Dienaba DIARRA",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Scholanova/express-tp-avril.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Scholanova/express-tp-avril/issues"
+  },
+  "homepage": "https://github.com/Scholanova/express-tp-avril#readme"
 }
