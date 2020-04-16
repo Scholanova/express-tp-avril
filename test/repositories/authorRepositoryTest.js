@@ -52,6 +52,7 @@ describe('authorRepository', () => {
 
       expect(createdAuthorValue.name).to.equal(authorData.name)
       expect(createdAuthorValue.age).to.equal(authorData.age)
+      expect(createdAuthorValue.language).to.equal(authorData.language)
 
       retrievedAuthor = await authorRepository.get(createdAuthor.id)
       const retrievedAuthorValue = retrievedAuthor.get()
