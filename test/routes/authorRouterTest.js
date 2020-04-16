@@ -43,7 +43,7 @@ describe('authorRouter', () => {
 
       beforeEach(async () => {
         // given
-        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' })
+        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' })
         authorRepository.listAll.resolves([author])
 
         // when
@@ -58,7 +58,7 @@ describe('authorRouter', () => {
       it('should return an html list with author info inside', () => {
         // then
         expect(response).to.be.html
-        expect(response.text).to.contain('Jean-Jacques Rousseau (JJR)')
+        expect(response.text).to.contain('Jean-Jacques Rousseau (JJR, french)')
       })
     })
   })
@@ -160,13 +160,13 @@ describe('authorRouter', () => {
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net' })
+          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net', 'language': 'french' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
-        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR' })
+        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR', language: 'french' })
       })
 
       it('should succeed with a status 302', () => {
@@ -204,14 +204,14 @@ describe('authorRouter', () => {
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net' })
+          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: 'french' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
         expect(authorService.create).to.have.been.calledWith({
-          name: previousNameValue, pseudo: undefined, email: 'test@example.net'
+          name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: 'french'
         })
       })
 
