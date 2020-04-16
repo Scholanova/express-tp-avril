@@ -1,137 +1,387 @@
-const { expect } = require('../testHelper')
+const { expect, sinon } = require('../testHelper')
 
+const authorService = require('../../lib/services/authorService')
 const authorRepository = require('../../lib/repositories/authorRepository')
-const models = require('../../lib/models')
-const { ResourceNotFoundError } = require('../../lib/errors')
-const Author = models.Author
+const Joi = require('@hapi/joi')
+const Author = require('../../lib/models').Author
 
-describe('authorRepository', () => {
-
-  afterEach(async () => {
-    await Author.destroy({ where: {} })
-  })
-
-  describe('get', () => {
-
-    let notExistingId
-    let getAuthorPromise
-
-    context('author does not exist', () => {
-      beforeEach(async () => {
-        // given
-        notExistingId = 23456789
-
-        // when
-        getAuthorPromise = authorRepository.get(notExistingId)
-      })
-
-      it('should throw a not found error', () => {
-        // then
-        return expect(getAuthorPromise).to.eventually.be.rejectedWith(ResourceNotFoundError)
-      })
-    })
-  })
+describe('authorService', () => {
 
   describe('create', () => {
 
-    let createdAuthor
-    let retrievedAuthor
     let authorData
+    let authorCreationPromise
 
-    beforeEach(async () => {
-      // given
-      authorData = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language: 'french' }
-
-      // when
-      createdAuthor = await authorRepository.create(authorData)
+    beforeEach(() => {
+      sinon.stub(authorRepository, 'create')
     })
 
-    // then
-    it('should return a author with the right properties', async () => {
-      const createdAuthorValue = createdAuthor.get()
+    context('when the author data is valid', () => {
 
-      expect(createdAuthorValue.name).to.equal(authorData.name)
-      expect(createdAuthorValue.age).to.equal(authorData.age)
-      expect(createdAuthorValue.language).to.equal(authorData.language)
+      let author
 
-      retrievedAuthor = await authorRepository.get(createdAuthor.id)
-      const retrievedAuthorValue = retrievedAuthor.get()
+      beforeEach(() => {
+        // given
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        author = new Author(authorData)
+        authorRepository.create.resolves(author)
 
-      expect(createdAuthorValue).to.deep.equal(retrievedAuthorValue)
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      // then
+      it('should call the author Repository with the creation data', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.have.been.calledWith(authorData)
+      })
+      it('should resolve with the created author from reprository', () => {
+        // then
+        return expect(authorCreationPromise).to.eventually.equal(author)
+      })
+    })
+
+    context('when the author name is missing', () => {
+
+      beforeEach(() => {
+        // given
+        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about missing name', () => {
+        // then
+        const expectedErrorDetails = [{
+          message: '"name" is required',
+          path: ['name'],
+          type: 'any.required',
+          context: { label: 'name', key: 'name' }
+        }]
+
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
+    })
+
+    context('when the author name is empty', () => {
+
+      beforeEach(() => {
+        // given
+        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about missing name', () => {
+        // then
+        const expectedErrorDetails = [{
+          message: '"name" is not allowed to be empty',
+          path: ['name'],
+          type: 'string.empty',
+          context: { label: 'name', key: 'name', value: '' }
+        }]
+
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
+    })
+
+    context('when the author name is to short', () => {
+
+      beforeEach(() => {
+        // given
+        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about missing name', () => {
+        // then
+        const expectedErrorDetails = [{
+          message: '"name" length must be at least 4 characters long',
+          path: ['name'],
+          type: 'string.min',
+          context: { label: 'name', key: 'name', value: 'JJR', limit: 4, encoding: 'utf8' }
+        }]
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
+    })
+
+    context('when the author email is missing', () => {
+
+      beforeEach(() => {
+        // given
+        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined, language: 'french' }
+
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about missing email', () => {
+        // then
+        const expectedErrorDetails = [{
+          message: '"email" is required',
+          path: ['email'],
+          type: 'any.required',
+          context: { label: 'email', key: 'email' }
+        }]
+
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
+    })
+
+    context('when the author email is not a valid email', () => {
+
+      beforeEach(() => {
+        // given
+        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'not an email', language: 'french' }
+
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about invalid email format', () => {
+          // then
+          const expectedErrorDetails = [{
+            message: '"email" must be a valid email',
+            path: ['email'],
+            type: 'string.email',
+            context: {
+              invalids: ['not an email'], label: 'email', key: 'email', value: 'not an email'
+            },
+
+          }]
+
+          return expect(authorCreationPromise)
+            .to.eventually.be.rejectedWith(Joi.ValidationError)
+            .with.deep.property('details', expectedErrorDetails)
+        }
+      )
+    })
+
+    context('when the author name and email are missing', () => {
+
+      beforeEach(() => {
+        // given
+        authorData = {language:'french'}
+
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about missing email', () => {
+        // then
+        const expectedErrorDetails = [
+          {
+            context: { key: 'name', label: 'name' },
+            message: '"name" is required',
+            path: ['name'],
+            type: 'any.required'
+          },
+          {
+            context: { key: 'email', label: 'email' },
+            message: '"email" is required',
+            path: ['email'],
+            type: 'any.required'
+          }
+        ]
+
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
+    })
+
+    context('when the author language is missing', () => {
+
+      beforeEach(() => {
+        // given
+        authorData = { name: 'JeanJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
+
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about missing language', () => {
+        // then
+        const expectedErrorDetails = [{
+          message: '"language" is required',
+          path: ['language'],
+          type: 'any.required',
+          context: { label: 'language', key: 'language' }
+        }]
+
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
+    })
+
+    context('when the author language is neither french nor english', () => {
+
+      beforeEach(() => {
+        // given
+        authorData = { name: 'JeanJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'german' }
+
+        // when
+        authorCreationPromise = authorService.create(authorData)
+      })
+
+      it('should not call the author Repository', async () => {
+        // then
+        await authorCreationPromise.catch(() => {})
+        expect(authorRepository.create).to.not.have.been.called
+      })
+      it('should reject with a ValidationError error about unsupported language', () => {
+        // then
+        const expectedErrorDetails = [{
+          message: '"language" must be one of [french, english]',
+          path: ['language'],
+          type: 'any.only',
+          context: { label: 'language', key: 'language', valids: ['french', 'english'], 'value': 'german' }
+        }]
+
+        return expect(authorCreationPromise)
+          .to.eventually.be.rejectedWith(Joi.ValidationError)
+          .with.deep.property('details', expectedErrorDetails)
+      })
     })
   })
 
-  describe('listAll', () => {
-    let result
+  describe('listForLanguage', () => {
+    describe('listForLanguage', () => {
+      let result
 
-    context('when there is no authors in the repository', () => {
-
-      beforeEach(async () => {
-        // given
-
-        // when
-        result = await authorRepository.listAll()
+      beforeEach(() => {
+        sinon.stub(authorRepository, 'listForLanguage')
       })
 
-      it('should return an empty list', () => {
-        // then
-        expect(result).to.be.empty
+      context('when the author language is missing', () => {
+        beforeEach(() => {
+          // given
+          language = { language: undefined }
+
+          // when
+          authorListForLanguagePromise = authorService.listForLanguage(language)
+        })
+        it('should not call the author Repository', async () => {
+          // then
+          await authorListForLanguagePromise.catch(() => {})
+          expect(authorRepository.listForLanguage).to.not.have.been.called
+        })
+        it('should reject with a ValidationError error about missing language', () => {
+          // then
+          const expectedError = [{
+            message: '"language" is required',
+            path: ['language'],
+            type: 'any.required',
+            context: { label: 'language', key: 'language' }
+          }]
+
+          return expect(authorListForLanguagePromise)
+            .to.eventually.be.rejectedWith(Joi.ValidationError)
+            .with.deep.property('details', expectedError)
+        })
       })
-    })
+      context('when the author language is neither french nor english', () => {
+        beforeEach(() => {
+          // given
+          language = { language: 'german' }
 
-    context('when there are two authors in the repository', () => {
+          // when
+          authorListForLanguagePromise = authorService.listForLanguage(language)
+        })
+        it('should not call the author Repository', async () => {
+          // then
+          await authorListForLanguagePromise.catch(() => {})
+          expect(authorRepository.listForLanguage).to.not.have.been.called
+        })
+        it('should reject with a ValidationError error about unsupported language', () => {
+          // then
+          const expectedError = [{
+            message: '"language" must be one of [french, english]',
+            path: ['language'],
+            type: 'any.only',
+            context: { label: 'language', key: 'language', valids: ['french', 'english'], 'value': 'german' }
+          }]
 
-      let author1
-      let author2
-
-      beforeEach(async () => {
-        // given
-        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
-        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'english' }
-        author1 = await authorRepository.create(jjrData)
-        author2 = await authorRepository.create(ppData)
-
-        // when
-        result = await authorRepository.listAll()
+          return expect(authorListForLanguagePromise)
+            .to.eventually.be.rejectedWith(Joi.ValidationError)
+            .with.deep.property('details', expectedError)
+        })
       })
+      context('when the author language is either french or english', () => {
+        let authorPP
+        let authorJJ
 
-      it('should return a list with the two authors', () => {
-        // then
-        const author1Value = author1.get()
-        const author2Value = author2.get()
-        const resultValues = result.map((author) => author.get())
+        beforeEach(() => {
+          // given
+          language = { language: 'french' }
+          authorPP = new Author({ name: 'Pierre', pseudo: 'PP', email: 'PP@rousseau.ch', language: 'french' })
+          authorJJ = new Author({ name: 'Jean', pseudo: 'JJ', email: 'JJ@pullman.co.uk', language: 'french' })
 
-        expect(resultValues).to.deep.equal([author1Value, author2Value])
-      })
-    })
-  })
+          authorRepository.listForLanguage.resolves([authorPP, authorJJ])
 
-  describe.skip('listForLanguage', () => {
-    let result
+          // when
+          authorListForLanguagePromise = authorService.listForLanguage(language);
+        })
 
-    context('when there is are authors for that language in the repository, only some for other language', () => {
+        it('should call the author Repository with the language', async () => {
+          // then
+          await authorListForLanguagePromise.catch(() => {})
+          expect(authorRepository.listForLanguage).to.have.been.calledWith(language)
+        })
 
-      beforeEach(async () => {
-        // given
-
-        // when
-      })
-
-      it('should return an empty list', () => {
-        // then
-      })
-    })
-
-    context('when there are two authors in the repository for that language and some for other languages', () => {
-
-      beforeEach(async () => {
-        // given
-
-        // when
-      })
-
-      it('should return a list with the two authors', () => {
-        // then
+        it('should resolve with the authors listed from reprository', () => {
+          // then
+          return expect(authorListForLanguagePromise).to.eventually.deep.equal([authorPP, authorJJ])
+        })
       })
     })
   })
