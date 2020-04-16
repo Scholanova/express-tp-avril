@@ -22,7 +22,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language:'french' }
         author = new Author(authorData)
         authorRepository.create.resolves(author)
 
@@ -76,7 +76,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch', language:'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -106,7 +106,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language:'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -135,7 +135,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined }
+        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined , language:'french'}
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -165,7 +165,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'not an email' }
+        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'not an email', language:'english' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -199,7 +199,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = {}
+        authorData = {language:'english'}
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -237,7 +237,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
+        authorData = { name: 'Jean-JacquesJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
 
         // when
         authorCreationPromise = authorService.create(authorData)
