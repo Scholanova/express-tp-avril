@@ -19,14 +19,16 @@ module.exports = {
           pseudo: 'JJR',
           email: 'jj@rousseau.ch',
           createdAt: new Date('1712-06-28T15:24:00'),
-          updatedAt: new Date('1778-07-02T03:56:00')
+          updatedAt: new Date('1778-07-02T03:56:00'),
+          language: 'switczfhjhg'
         },
         {
           name: 'Jean-Paul Sartre',
           pseudo: undefined,
           email: 'jp_sartre@academie-francaise.fr',
           createdAt: new Date('1905-06-21T10:31:00'),
-          updatedAt: new Date('1980-04-15T21:01:00')
+          updatedAt: new Date('1980-04-15T21:01:00'),
+          language: 'french'
         }
       ],
       {})
