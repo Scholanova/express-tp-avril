@@ -8,8 +8,8 @@
     "test": "mocha --recursive",
     "db:init": "npx sequelize db:create",
     "db:migrate": "npx sequelize db:migrate",
-    "db:seed": "npx sequelize db:seed:all",
-    "db:test:init": "NODE_ENV=test npx sequelize db:create"
+    "db:seed": "npx sequelize db:all",
+    "db:test:init": "set NODE_ENV=test&& npx sequelize db:create"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
