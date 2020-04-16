@@ -365,23 +365,29 @@ describe('authorService', () => {
         })
       })
       context('when the author language is either french or english', () => {
+        let author1
+        let author2
+
         beforeEach(() => {
-          // given
+        // given
+          author1 = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJRr', email: 'jj@rousseau.ch', language: 'french' })
+          author2 = new Author({ name: 'Jean-Jacques Rousseau2', pseudo: 'JJRr', email: 'jj@rousseau.ch2', language: 'french' })
+
+          authorRepository.listForLanguage.resolves([author1, author2])
+
           language = 'french'
-          authorRepository.listForLanguage.resolves(language)
-
+  
           // when
-          authorListPromise = authorService.listForLanguage(language)
+          authorListForLanguagePromise = authorService.listForLanguage(language)
         })
-
         it('should call the author Repository with the language', async () => {
           // then
-          await authorListPromise.catch(() => {})
+          await authorListForLanguagePromise.catch(() => {})
           expect(authorRepository.listForLanguage).to.have.been.calledWith(language)
         })
         it('should resolve with the authors listed from reprository', () => {
           // then
-          return expect(authorListPromise).to.eventually.equal(language)
+          return expect(authorListForLanguagePromise).to.eventually.be.deep.equal([author1, author2])
         })
       })
     })
