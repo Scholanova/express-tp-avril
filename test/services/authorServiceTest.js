@@ -233,7 +233,7 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author language is missing', () => {
+    context('when the author language is missing', () => {
 
       beforeEach(() => {
         // given
@@ -263,7 +263,7 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author language is neither french nor english', () => {
+    context('when the author language is neither french nor english', () => {
 
       beforeEach(() => {
         // given
