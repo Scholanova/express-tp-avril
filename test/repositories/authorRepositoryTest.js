@@ -40,7 +40,7 @@ describe('authorRepository', () => {
 
     beforeEach(async () => {
       // given
-      authorData = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language: 'FR' }
+      authorData = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language: 'french' }
 
       // when
       createdAuthor = await authorRepository.create(authorData)
@@ -86,8 +86,8 @@ describe('authorRepository', () => {
 
       beforeEach(async () => {
         // given
-        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR' }
-        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'EN' }
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'english' }
         author1 = await authorRepository.create(jjrData)
         author2 = await authorRepository.create(ppData)
 
@@ -114,13 +114,13 @@ describe('authorRepository', () => {
 
       beforeEach(async () => {
         // given
-        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR' }
-        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'FR' }
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'french' }
         author1 = await authorRepository.create(jjrData)
         author2 = await authorRepository.create(ppData)
 
         // when
-        result = await authorRepository.listForLanguage('EN');
+        result = await authorRepository.listForLanguage('english');
       })
 
       it('should return an empty list', () => {
@@ -139,11 +139,11 @@ describe('authorRepository', () => {
 
       beforeEach(async () => {
         // given
-        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR' }
-        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'FR' }
-        const eaaData = { name: 'Edwin Abbott Abbott', pseudo: 'E. Bott', email: 'edwin@abbott.en', language: 'EN' }
-        const paData = { name: 'Paul Ableman', pseudo: 'PA', email: 'paul@ableman.en', language: 'EN' }
-        const haData = { name: 'Harriet Arbuthnot', pseudo: 'Arbut', email: 'harriet@arbuthnot.co.uk', language: 'EN' }
+        const jjrData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        const ppData = { name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'french' }
+        const eaaData = { name: 'Edwin Abbott Abbott', pseudo: 'E. Bott', email: 'edwin@abbott.en', language: 'english' }
+        const paData = { name: 'Paul Ableman', pseudo: 'PA', email: 'paul@ableman.en', language: 'english' }
+        const haData = { name: 'Harriet Arbuthnot', pseudo: 'Arbut', email: 'harriet@arbuthnot.co.uk', language: 'english' }
         author1 = await authorRepository.create(jjrData)
         author2 = await authorRepository.create(ppData)
         author3 = await authorRepository.create(eaaData)
@@ -151,7 +151,7 @@ describe('authorRepository', () => {
         author5 = await authorRepository.create(haData)
 
         // when
-        result = await authorRepository.listForLanguage('FR')
+        result = await authorRepository.listForLanguage('french')
       })
 
       it('should return a list with the two authors', () => {

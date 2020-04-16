@@ -22,7 +22,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'FR' }
+        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'french' }
         author = new Author(authorData)
         authorRepository.create.resolves(author)
 
@@ -46,7 +46,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'FR' }
+        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -76,7 +76,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'FR' }
+        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -106,7 +106,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'FR' }
+        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -135,7 +135,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined, 'language': 'FR' }
+        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined, 'language': 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -165,7 +165,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'not an email', 'language': 'FR' }
+        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'not an email', 'language': 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -199,7 +199,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { 'language': 'FR' }
+        authorData = { 'language': 'french' }
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -263,7 +263,7 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author language is neither french nor english', () => {
+    context('when the author language is neither french nor english', () => {
 
       beforeEach(() => {
         // given
@@ -332,7 +332,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorLanguage = 'UK'
+        authorLanguage = 'german'
 
         // when
         authorListForLanguagePromise = authorService.listForLanguage(authorLanguage);
@@ -360,9 +360,9 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorLanguage = 'FR'
-        author1 = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'FR' })
-        author2 = new Author({ name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'FR' })
+        authorLanguage = 'french'
+        author1 = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'french' })
+        author2 = new Author({ name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', language: 'french' })
   
         authorRepository.listForLanguage.resolves([author1, author2])
 

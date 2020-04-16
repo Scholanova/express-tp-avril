@@ -43,7 +43,7 @@ describe('authorRouter', () => {
 
       beforeEach(async () => {
         // given
-        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR' })
+        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' })
         authorRepository.listAll.resolves([author])
 
         // when
@@ -58,7 +58,7 @@ describe('authorRouter', () => {
       it('should return an html list with author info inside', () => {
         // then
         expect(response).to.be.html
-        expect(response.text).to.contain('FR Jean-Jacques Rousseau (JJR)')
+        expect(response.text).to.contain('french Jean-Jacques Rousseau (JJR)')
       })
     })
   })
@@ -108,7 +108,7 @@ describe('authorRouter', () => {
         // given
         authorId = '123'
         const authorData = {
-          id: authorId, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'FR'
+          id: authorId, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french'
         }
         author = new Author(authorData)
 
@@ -154,20 +154,20 @@ describe('authorRouter', () => {
 
       beforeEach(async () => {
         // given
-        author = new Author({ id: 12, name: 'Ben', age: 3, language: 'FR' })
+        author = new Author({ id: 12, name: 'Ben', age: 3, language: 'french' })
         authorService.create.resolves(author)
 
         // when
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net', 'language': 'FR' })
+          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net', 'language': 'french' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
-        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR', language: 'FR' })
+        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR', language: 'french' })
       })
 
       it('should succeed with a status 302', () => {
@@ -179,6 +179,7 @@ describe('authorRouter', () => {
         // then
         expect(response).to.redirectTo(`/authors/${author.id}`)
       })
+
     })
 
     context('when the author creation fails with validation errors', () => {
@@ -205,14 +206,14 @@ describe('authorRouter', () => {
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: 'FR' })
+          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: 'french' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
         expect(authorService.create).to.have.been.calledWith({
-          name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: 'FR'
+          name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: 'french'
         })
       })
 
@@ -230,4 +231,137 @@ describe('authorRouter', () => {
       })
     })
   })
+
+  describe('listForLanguage - GET', () => {
+
+    let response
+    beforeEach(async () => {
+      // given
+
+      // when
+      response = await request(app).get('/authors/filter')
+    })
+
+    it('should succeed with a status 200', () => {
+      // then
+      expect(response).to.have.status(200)
+    })
+
+    it('should return the filter page', () => {
+      // then
+      expect(response).to.be.html
+      expect(response.text).to.contain(`No authors found`)
+    })
+
+  })
+
+  describe('listForLanguage - POST', () => {
+
+    let language
+    let author1
+    let author2
+
+    beforeEach(() => {
+      sinon.stub(authorService, 'listForLanguage')
+    })
+
+    context('when a language is selected', () => {
+
+      beforeEach(async () => {
+        // given
+        language = 'french'
+        author1 = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', 'language': 'french' })
+        author2 = new Author({ name: 'Philip Pullman', pseudo: 'Philip', email: 'philip@pullman.co.uk', 'language': 'french' })
+        authorService.listForLanguage.resolves([author1, author2])
+
+        // when
+        response = await request(app)
+              .post('/authors/filter')
+              .send({ language })
+      })
+
+      it('should call the service with language data', () => {
+        // then
+        expect(authorService.listForLanguage).to.have.been.calledWith(language)
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should redirect to filter page', () => {
+        // then
+        expect(response).to.be.html
+        for(let author of [author1, author2]) {
+          expect(response.text).to.contain(`${author.language} ${author.name} (${author.pseudo})`)
+        }        
+      })
+
+    })
+
+    context('when language is null', () => {
+
+      beforeEach(async () => {
+        // given
+        language = null
+        authorService.listForLanguage.rejects(new Joi.ValidationError('"language" is required'))
+
+        // when
+        response = await request(app)
+              .post('/authors/filter')
+              .send({ language })
+      })
+
+      it('should call the service with language data', () => {
+        // then
+        expect(authorService.listForLanguage).to.have.been.calledWith(language)
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should show filter author page with error message', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain('Error &#34;language&#34; is required')     
+      })
+
+    })
+
+    context('when language is not french or english', () => {
+
+      beforeEach(async () => {
+        // given
+        language = 'german'
+        authorService.listForLanguage.rejects(new Joi.ValidationError('"language" german is unsupported'))
+
+        // when
+        response = await request(app)
+              .post('/authors/filter')
+              .send({ language })
+      })
+
+      it('should call the service with language data', () => {
+        // then
+        expect(authorService.listForLanguage).to.have.been.calledWith(language)
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should show filter author page with error message', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain('Error &#34;language&#34; german is unsupported')     
+      })
+
+    })
+
+  })
+
 })
