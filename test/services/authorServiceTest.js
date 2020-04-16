@@ -364,12 +364,24 @@ describe('authorService', () => {
             .with.deep.property('details', expectedErrorDetails)
         })
       })
-      context.skip('when the author language is either french or english', () => {
+      context('when the author language is either french or english', () => {
+        beforeEach(() => {
+          // given
+          language = 'french'
+          authorRepository.listForLanguage.resolves(language)
+
+          // when
+          authorListPromise = authorService.listForLanguage(language)
+        })
+
         it('should call the author Repository with the language', async () => {
           // then
+          await authorListPromise.catch(() => {})
+          expect(authorRepository.listForLanguage).to.have.been.calledWith(language)
         })
         it('should resolve with the authors listed from reprository', () => {
           // then
+          return expect(authorListPromise).to.eventually.equal(language)
         })
       })
     })
