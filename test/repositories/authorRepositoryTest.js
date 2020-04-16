@@ -106,32 +106,48 @@ describe('authorRepository', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
     let result
 
     context('when there is are authors for that language in the repository, only some for other language', () => {
 
       beforeEach(async () => {
-        // given
+       // given
+         const dd = { name: 'djibril', pseudo: 'dd', email: 'djibril@french.ch', language: 'french' }
+         const vv = { name: 'diop', pseudo: 'dd', email: 'diop2@french.ch', language: 'french' }
+         author1 = await authorRepository.create(dd)
+         author2 = await authorRepository.create(vv)
 
-        // when
+               // when
+               result = await authorRepository.listForLanguage('english')
       })
 
       it('should return an empty list', () => {
-        // then
+         expect(result).to.be.empty
       })
     })
 
     context('when there are two authors in the repository for that language and some for other languages', () => {
 
       beforeEach(async () => {
-        // given
+         const dm = { name: 'Dembis', pseudo: 'dm', email: 'dm@french.ch', language: 'french' }
+                const db = { name: 'Demba', pseudo: 'db', email: 'db@french.ch', language: 'french' }
+                const ds = { name: 'Dembous', pseudo: 'ds', email: 'ds@english.uk', language: 'english' }
 
-        // when
+                author1 = await authorRepository.create(dm)
+                author2 = await authorRepository.create(db)
+                author3 = await authorRepository.create(ds)
+
+                // when
+                result = await authorRepository.listForLanguage('french')
       })
 
       it('should return a list with the two authors', () => {
-        // then
+       const author1Value = author1.get()
+              const author2Value = author2.get()
+              const resultValues = result.map((author) => author.get())
+
+              expect(resultValues).to.deep.equal([author1Value, author2Value])
       })
     })
   })
