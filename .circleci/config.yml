@@ -6,8 +6,8 @@ executors:
       - image: circleci/node:10.15.3
       - image: postgres:11.7-alpine
         environment:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: covid
+          POSTGRES_PASSWORD: passer
           POSTGRES_DB: scholanova_express_3_test
 
 jobs:
