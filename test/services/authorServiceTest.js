@@ -106,7 +106,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch' }
+        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch' , language: 'fr'}
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -233,7 +233,7 @@ describe('authorService', () => {
       })
     })
 
-    context.skip('when the author language is missing', () => {
+    context('when the author language is missing', () => {
 
       beforeEach(() => {
         // given
