@@ -40,7 +40,7 @@ describe('authorRepository', () => {
 
     beforeEach(async () => {
       // given
-      authorData = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language: 'french' }
+      authorData = { name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language: undefined }
 
       // when
       createdAuthor = await authorRepository.create(authorData)
