@@ -27,7 +27,7 @@ describe('authorRepository', () => {
 
       it('should throw a not found error', () => {
         // then
-        return expect(getAuthorPromise).to.eventually.be.rejectedWith(ResourceNotFoundError)
+        expect(getAuthorPromise).to.eventually.be.rejectedWith(ResourceNotFoundError)
       })
     })
   })
