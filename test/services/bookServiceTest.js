@@ -136,5 +136,38 @@ describe('bookService', () => {
 
         })
 
+
+        context('when author have already 5 books', () => {
+            
+            beforeEach(() => {
+                // given
+                bookData = { authorId: 1234, title: 'L\'aube noir' }
+                sinon.stub(bookRepository, 'listForAuthor')
+                bookRepository.listForAuthor.resolves([1, 2, 3, 4, 5])
+
+                // when
+                bookCreationPromise = bookService.create(bookData)
+            })
+
+            it('should not call the book Repository ', async () => {
+                // then
+                await bookCreationPromise.catch(() => {})
+                expect(bookRepository.create).to.not.have.been.calledWith(bookData)
+            })
+            it('should reject with a ValidationError error already five books for the author', () => {
+                // then
+                const expectedErrorDetails = [{
+                  message: 'Author cannot have more than 5 books',
+                  path: [],
+                  type: 'number.max',
+                  context: { label: 'value', limit: 4, value: 5 }
+                }]
+        
+                return expect(bookCreationPromise)
+                  .to.eventually.be.rejectedWith(Joi.ValidationError)
+                  .with.deep.property('details', expectedErrorDetails)
+            })
+        })
+
     })
 })
