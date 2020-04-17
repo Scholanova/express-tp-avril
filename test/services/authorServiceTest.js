@@ -293,28 +293,53 @@ describe('authorService', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
-    describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
+    describe('listForLanguage', () => {
       let result
 
-      context.skip('when the author language is missing', () => {
+      context('when the author language is missing', () => {
         it('should not call the author Repository', async () => {
           // then
+          await authorCreationPromise.catch(() => {})
+          expect(authorRepository.listForLanguage).to.not.have.been.called
         })
         it('should reject with a ValidationError error about missing language', () => {
           // then
+          const expectedErrorDetails = [{
+            message: '"language" must be one of [french, english]',
+            path: ['language'],
+            type: 'any.only',
+            context: { label: 'language', key: 'language', valids: ['french', 'english'], 'value': 'german' }
+          }]
+
+          return expect(authorCreationPromise)
+              .to.eventually.be.rejectedWith(Joi.ValidationError)
+              .with.deep.property('details', expectedErrorDetails)
         })
       })
-      context.skip('when the author language is neither french nor english', () => {
+      context('when the author language is neither french nor english', () => {
 
         it('should not call the author Repository', async () => {
           // then
+          await authorCreationPromise.catch(() => {})
+          expect(authorRepository.listForLanguage).to.not.have.been.called
         })
         it('should reject with a ValidationError error about unsupported language', () => {
           // then
+          // then
+          const expectedErrorDetails = [{
+            message: '"language" must be one of [french, english]',
+            path: ['language'],
+            type: 'any.only',
+            context: { label: 'language', key: 'language', valids: ['french', 'english'], 'value': 'german' }
+          }]
+
+          return expect(authorCreationPromise)
+              .to.eventually.be.rejectedWith(Joi.ValidationError)
+              .with.deep.property('details', expectedErrorDetails)
         })
       })
-      context.skip('when the author language is either french or english', () => {
+      context('when the author language is either french or english', () => {
         it('should call the author Repository with the language', async () => {
           // then
         })
