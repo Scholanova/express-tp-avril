@@ -43,7 +43,7 @@ describe('authorRouter', () => {
 
       beforeEach(async () => {
         // given
-        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch' })
+        const author = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: "french" })
         authorRepository.listAll.resolves([author])
 
         // when
@@ -135,6 +135,7 @@ describe('authorRouter', () => {
         expect(response.text).to.contain(`Name: ${author.name}`)
         expect(response.text).to.contain(`Pseudo: ${author.pseudo}`)
         expect(response.text).to.contain(`Email: ${author.email}`)
+        //expect(response.text).to.contain(`Language: ${author.language}`)
       })
     })
   })
@@ -160,13 +161,13 @@ describe('authorRouter', () => {
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net' })
+          .send({ 'name': 'JJR', 'pseudo': 'JJR', 'email': 'jjr@exemple.net', 'language': 'french' })
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
-        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR' })
+        expect(authorService.create).to.have.been.calledWith({ email: 'jjr@exemple.net', name: 'JJR', pseudo: 'JJR', language: 'french' })
       })
 
       it('should succeed with a status 302', () => {
@@ -186,6 +187,7 @@ describe('authorRouter', () => {
       let errorMessage
       let errorDetails
       let previousNameValue
+      let previouslanguage
 
       beforeEach(async () => {
         // given
@@ -200,18 +202,19 @@ describe('authorRouter', () => {
         authorService.create.rejects(validationError)
 
         previousNameValue = 'Some special name for a author'
+        previouslanguage = "french"
         // when
         response = await request(app)
           .post('/authors/new')
           .type('form')
-          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net' })
+          .send({ name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: previouslanguage})
           .redirects(0)
       })
 
       it('should call the service with author data', () => {
         // then
         expect(authorService.create).to.have.been.calledWith({
-          name: previousNameValue, pseudo: undefined, email: 'test@example.net'
+          name: previousNameValue, pseudo: undefined, email: 'test@example.net', language: previouslanguage
         })
       })
 
@@ -226,6 +229,7 @@ describe('authorRouter', () => {
         expect(response.text).to.contain('New Author')
         expect(response.text).to.contain("&#34;email&#34; is required")
         expect(response.text).to.contain(previousNameValue)
+        expect(response.text).to.contain(previouslanguage)
       })
     })
   })
