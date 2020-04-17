@@ -1,86 +1,105 @@
 const { expect } = require('../testHelper')
 
 const bookRepository = require('../../lib/repositories/bookRepository')
-const authorRepository = require('../../lib/repositories/authorRepository')
-
 const models = require('../../lib/models')
-const { ResourceNotFoundError, SequelizeForeignKeyConstraintError } = require('../../lib/errors')
+const { ResourceNotFoundError } = require('../../lib/errors')
 const Book = models.Book
 const Author = models.Author
 
-
 describe('bookRepository', () => {
 
-  afterEach(async () => {
-    await Book.destroy({ where: {} })
-    await Author.destroy({ where: {} })
-  })
+    afterEach(async () => {
+        await Book.destroy({ where: {} })
+        await Author.destroy({ where: {} })
+    })
 
-  describe('Create book', () => {
+    describe('get', () => {
 
-    let createdBook
-    let retrievedBook
-    let book
+        let notExistingId
+        let getBookPromise
+        let createdBook
 
-    context('When create success, return a book', () => {
+        context('book does not exist', () => {
+            beforeEach(async () => {
+                // given
+                notExistingId = 23456789
 
-        beforeEach(async () => {
-        // given
-        const jjr = { id: 1, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
-        authorRepository.create(jjr)
-        book = { title: 'On est là !', authorId: 1}
+                // when
+                getBookPromise = bookRepository.get(notExistingId)
+            })
 
-        // when
-        createdBook = await bookRepository.create(book)
+            it('should throw a not found error', () => {
+                // then
+                return expect(getBookPromise).to.eventually.be.rejectedWith(ResourceNotFoundError)
+            })
         })
 
-        // then
-        it('Should return a book with the same title', async () => {
-        const createdBookValue = createdBook.get()
+        context('book exist', () => {
 
-        expect(createdBookValue.title).to.equal(book.title)
-        expect(createdBookValue.authorId).to.equal(book.authorId)
+            beforeEach(async () => {
+                // given
+                let author = await Author.create({ id: 1234, name: 'Jean-Paul Sartre', pseudo: 'JPP', email: 'jp_sartre@academie-francaise.fr', language: 'french' });
+                createdBook = await Book.create({ authorId: author.id, title: 'L\'aube noir' })
 
-        retrievedBook = await bookRepository.get(createdBook.id)
-        const retrievedBookValue = retrievedBook.get()
+                // when
+                getBookPromise = bookRepository.get(createdBook.id)
+            })
 
-        expect(createdBookValue).to.deep.equal(retrievedBookValue)
+            it('should return the right book', async () => {
+                let gettedBook = await getBookPromise;
+                let gettedBookValue = gettedBook.get();
+
+                let createdBookValue = createdBook.get();
+
+                expect(createdBookValue).to.deep.equal(gettedBookValue);
+            })
         })
     })
 
-    context('When create fail because no author associated to the book', () => {
+    describe('create', () => {
 
-        beforeEach(async () => {
-        // given
-        bookData = { title: 'On est là !', authorId: 1}
+        let bookData
+        let createdBook
+
+        context('when author not existing', () => {
+
+            beforeEach(async () => {
+                // given
+                bookData = { authorId: 1234, title: 'L\'aube rouge' }
+                            })
+
+            it('should throw an error', () => {
+                // when & then
+                expect(bookRepository.create(bookData)).to.eventually.be.rejected;
+            })
+
         })
 
-        // then
-        it('should return an SequelizeForeignKeyConstraintError:', async () => {
-            return expect(bookRepository.create(book)).to.eventually.be.rejectedWith(SequelizeForeignKeyConstraintError)
+        context('when author is existing', () => {
+
+            beforeEach(async () => {
+                // given
+                let author = await Author.create({ id: 1234, name: 'Jean-Paul Sartre', pseudo: 'JPP', email: 'jp_sartre@academie-francaise.fr', language: 'french' });
+                bookData = { authorId: author.id, title: 'L\'aube rouge' }
+
+                // when
+                createdBook = await bookRepository.create(bookData)
+                let a = await createdBook.getAuthor();
+            })
+
+            it('should return a book with the right properties', () => {
+                const createdBookValue = createdBook.get()
+
+                expect(createdBookValue.title).to.equal(bookData.title)
+
+                // retrievedAuthor = await authorRepository.get(createdAuthor.id)
+                // const retrievedAuthorValue = retrievedAuthor.get()
+
+                // expect(createdAuthorValue).to.deep.equal(retrievedAuthorValue)
+            })
+
         })
+
     })
-  })
 
-  describe('Get book', () => {
-
-    let falsegId
-    let getBookPromise
-
-    context('Book does not exist', () => {
-      beforeEach(async () => {
-        // given
-        falsegId = 19
-
-        // when
-        getBookPromise = bookRepository.get(falsegId)
-      })
-
-      it('should throw a not found error', () => {
-        // then
-        return expect(getBookPromise).to.eventually.be.rejectedWith(ResourceNotFoundError)
-      })
-    })
-  })
-
-})
+}) 
