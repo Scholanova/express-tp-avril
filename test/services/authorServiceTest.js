@@ -1,4 +1,4 @@
-const { expect, sinon } = require('../testHelper')
+const { expect, sinon,factory } = require('../testHelper')
 
 const authorService = require('../../lib/services/authorService')
 const authorRepository = require('../../lib/repositories/authorRepository')
@@ -22,7 +22,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        authorData = factory.createAuthorData()
         author = new Author(authorData)
         authorRepository.create.resolves(author)
 
@@ -46,7 +46,8 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: undefined, pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        authorData = factory.createAuthorData()
+        authorData.name = undefined
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -76,7 +77,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: '', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        authorData = factory.createAuthorData({ name: '' })
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -106,7 +107,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'french' }
+        authorData = factory.createAuthorData({ name: 'JJR' })
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -135,8 +136,8 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: undefined, language: 'french' }
-
+        authorData = factory.createAuthorData()
+        authorData.email = undefined
         // when
         authorCreationPromise = authorService.create(authorData)
       })
@@ -165,7 +166,8 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques', pseudo: 'JJR', email: 'not an email', language: 'french' }
+        authorData = factory.createAuthorData({ email: 'not an email' })
+        
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -210,7 +212,7 @@ describe('authorService', () => {
         await authorCreationPromise.catch(() => {})
         expect(authorRepository.create).to.not.have.been.called
       })
-      it('should reject with a ValidationError error about missing email, name & language', () => {
+      it('should reject with a ValidationError error about missing properties', () => {
         // then
         const expectedErrorDetails = [
           {
@@ -254,6 +256,7 @@ describe('authorService', () => {
         await authorCreationPromise.catch(() => {})
         expect(authorRepository.create).to.not.have.been.called
       })
+
       it('should reject with a ValidationError error about missing language', () => {
         // then
         const expectedErrorDetails = [{
@@ -273,7 +276,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch', language: 'german' }
+        authorData = factory.createAuthorData({ language: 'german' }) 
 
         // when
         authorCreationPromise = authorService.create(authorData)
@@ -284,6 +287,7 @@ describe('authorService', () => {
         await authorCreationPromise.catch(() => {})
         expect(authorRepository.create).to.not.have.been.called
       })
+
       it('should reject with a ValidationError error about unsupported language', () => {
         // then
         const expectedErrorDetails = [{

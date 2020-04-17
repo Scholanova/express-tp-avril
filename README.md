@@ -82,3 +82,8 @@ module.exports = {
   }
 };
 ```
+
+## ALTERNATIVE COMMAND RUN TEST WITH MOCHA
+
+- npm test -- --watch --reporter nyan
+- npm test -- --watch --reporter dot
