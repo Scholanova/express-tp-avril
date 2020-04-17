@@ -105,7 +105,7 @@ describe('authorRepository', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
+  describe('listForLanguage', () => {
     let result
 
     context('when there is are authors for that language in the repository, only some for other language', () => {
