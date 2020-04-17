@@ -237,7 +237,7 @@ describe('authorService', () => {
 
       beforeEach(() => {
         // given
-        authorData = { name: 'JJR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
+        authorData = { name: 'JJRR', pseudo: 'JJR', email: 'jj@rousseau.ch', language: undefined }
         // when
         authorCreationPromise = authorService.create(authorData)
       })
