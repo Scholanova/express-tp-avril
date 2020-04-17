@@ -56,7 +56,7 @@ describe('bookRepository', () => {
         })
 
         // then
-        it('should return an ForeignKeyConstraintError:', async () => {
+        it('should return an SequelizeForeignKeyConstraintError:', async () => {
             return expect(bookRepository.create(book)).to.eventually.be.rejectedWith(SequelizeForeignKeyConstraintError)
         })
     })
