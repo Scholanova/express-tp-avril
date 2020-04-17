@@ -98,96 +98,64 @@ describe('bookService', () => {
     })
     
 
-
-
-    
-    describe.skip('listForLanguage', () => {
-        let authorListPromise
+    describe('listForAuthor', () => {
+        let bookListPromise
 
         beforeEach(() => {
-            sinon.stub(authorRepository, 'listForLanguage')
+            sinon.stub(bookRepository, 'listForAuthor')
         })
 
-        describe('listForLanguage', () => {
+        describe('listForAuthor', () => {
 
-            context('when the author language is missing', () => {
-
-                beforeEach(() => {
-                // given
-                
-                // when
-                authorListPromise = authorService.listForLanguage(undefined)
-                })
-                it('should not call the author Repository', async () => {
-                // then
-                await authorListPromise.catch(() => {})
-                expect(authorRepository.listForLanguage).to.not.have.been.called
-                })
-                it('should reject with a ValidationError error about missing language', () => {
-                // then
-                const expectedErrorDetails = "\"value\" is required"
-                
-                return expect(authorListPromise)
-                    .to.eventually.be.rejectedWith(Joi.ValidationError)
-                    .with.deep.property('message', expectedErrorDetails)
-                })
-            })
-
-            context('when the author language is neither french nor english', () => {
+            context('when the authorId is missing', () => {
 
                 beforeEach(() => {
                     // given
-                    language = 'german'
                     
                     // when
-                    authorListPromise = authorService.listForLanguage(language)
+                    bookListPromise = bookService.listForAuthor(undefined)
                 })
 
-                it('should not call the author Repository', async () => {
+                it('should not call the book Repository', async () => {
                     // then
-                    await authorListPromise.catch(() => {})
-                    expect(authorRepository.listForLanguage).to.not.have.been.called
+                    await bookListPromise.catch(() => {})
+                    expect(bookRepository.listForAuthor).to.not.have.been.called
                 })
-                it('should reject with a ValidationError error about unsupported language', () => {
-                    // then
-                    const expectedErrorDetails = [{
-                        message: "\"value\" must be one of [french, english]",
-                        path: [],
-                        type: 'any.only',
-                        context: { label: 'value', valids: ['french', 'english'], 'value': 'german' }
-                    }]
 
-                    return expect(authorListPromise)
+                it('should reject with a ValidationError error about missing authorId', () => {
+                    // then
+                    const expectedErrorDetails = "\"value\" is required"
+                    
+                    return expect(bookListPromise)
                         .to.eventually.be.rejectedWith(Joi.ValidationError)
-                        .with.deep.property('details', expectedErrorDetails)
+                        .with.deep.property('message', expectedErrorDetails)
                 })
             })
-            context('when the author language is either french or english', () => {
+
+            context('when the authorId is not missing', () => {
                 let author1
                 let author2
 
                 beforeEach(() => {
                     // given
-                    author1 = new Author({ name: 'Jean-Jacques Rousseau', pseudo: 'JJRr', email: 'jj@rousseau.ch', language: 'french' })
-                    author2 = new Author({ name: 'Jean-Jacques Rousseau2', pseudo: 'JJRr', email: 'jj@rousseau.ch2', language: 'french' })
+                    book1 = new Book({ title: 'title1', authorId: 1})
+                    book2 = new Book({ title: 'title2', authorId: 1})
 
-                    authorRepository.listForLanguage.resolves([author1, author2])
+                    bookRepository.listForAuthor.resolves([book1, book2])
 
-                    language = 'french'
-            
                     // when
-                    authorListForLanguagePromise = authorService.listForLanguage(language)
+                    bookListPromise = bookService.listForAuthor(1)
                 })
 
-                it('should call the author Repository with the language', async () => {
+                it('should call the book Repository with the authorId', async () => {
                     // then
-                    await authorListForLanguagePromise.catch(() => {})
-                    expect(authorRepository.listForLanguage).to.have.been.calledWith(language)
+                    await bookListPromise.catch(() => {})
+                    expect(bookRepository.listForAuthor).to.have.been.calledWith(1)
                 })
 
                 it('should resolve with the authors listed from reprository', () => {
                     // then
-                    return expect(authorListForLanguagePromise).to.eventually.be.deep.equal([author1, author2])
+                    return expect(bookListPromise).to.eventually.be.deep.equal([book1, book2])
                 })
             })
         })
