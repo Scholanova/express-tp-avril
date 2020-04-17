@@ -12,7 +12,7 @@ chai.use(require('chai-as-promised'));
 const expect = chai.expect
 const request = chai.request
 before(async () => {
-  await models.sequelize.sync({ force: true, match: /_test$/ })
+  //await models.sequelize.sync({ force: true, match: /_test$/ })
 })
 
 afterEach(() => {
