@@ -229,4 +229,148 @@ describe('authorRouter', () => {
       })
     })
   })
+
+  describe('filter', () => {
+    let response
+
+    beforeEach(() => {
+      sinon.stub(authorService, 'listForLanguage')
+    })
+
+    context('when the listForLanguage succeeds with some results',()=>{
+      let foundAuthor
+      let filterLanguage
+
+      beforeEach(async () => {
+        // given
+        filterLanguage = 'french'
+        authorData = { name: 'Doom Slayer', pseudo: 'Doom Guy', email: 'doom.slayer@ripandtear.fr', language: 'french' }
+        //foundAuthor = await authorService.create(authorData)
+        foundAuthor = new Author(authorData)
+        authorService.listForLanguage.resolves([foundAuthor])
+
+        // when
+        response = await request(app)
+          .post('/authors/filter')
+          .type('form')
+          .send({ 'language': filterLanguage })
+      })
+
+      it('should call the service with language to filter upon', () =>{
+          expect(authorService.listForLanguage).to.have.been.calledWith({language:filterLanguage})
+      })
+
+      it('should succeed with a status 200',()=>{
+          expect(response).to.have.status(200)
+      })
+
+      it('should show result on page',() =>{
+        expect(response).to.be.html
+        expect(response.text).to.contain(`${foundAuthor.name} (${foundAuthor.pseudo})`)
+      })
+    })
+    context('when the listForLanguage fails due to bad parameter',() => {
+      let validationError
+      let filterLanguage
+
+      beforeEach(async () => {
+        // given
+        filterLanguage = 'demoniac'
+        validationError = Joi.object({
+          language: Joi.string().valid('french', 'english').required()
+        }).validate({ language: filterLanguage }).error
+
+        authorService.listForLanguage.rejects(validationError)
+
+        // when
+        response = await request(app)
+          .post('/authors/filter')
+          .type('form')
+          .send({ 'language': filterLanguage })
+      })
+
+      it('should not call the service',()=>{
+          expect(authorService.listForLanguage).have.been.calledWith({language : filterLanguage})
+      })
+
+      it('should return a 200 status code', () => {
+          expect(response).to.have.status(200)
+      })
+
+      it('should return the new author page with previous values',() => {
+        const expectedErrorMessage = '&#34;language&#34; must be one of [french, english]'
+
+        expect(response).to.be.html
+        expect(response.text).to.contain(filterLanguage)
+        expect(response.text).to.contain(expectedErrorMessage)
+      })
+    })
+    context('when the listForLanguage succeeds with no results', () => {
+
+      let filterLanguage
+
+      beforeEach(async () => {
+        // given
+        filterLanguage = 'french'
+        authorService.listForLanguage.resolves([])
+
+        // when
+        response = await request(app)
+          .post('/authors/filter')
+          .type('form')
+          .send({ 'language': filterLanguage })
+      })
+
+      it('should call the service with language to filter upon', () => {
+        // then
+        expect(authorService.listForLanguage).to.have.been.calledWith({
+          language: filterLanguage
+        })
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should show result on page', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain('No authors found for that language.')
+      })
+    })
+    context('when the listForLanguage fails due to missing language parameter',() => {
+      let foundAuthor
+      let filterLanguage
+
+      beforeEach(async () => {
+        // given
+        filterLanguage = undefined
+        validationError = Joi.object({
+          language: Joi.string().valid('french', 'english').required()
+        }).validate({ language: filterLanguage }).error
+
+        authorService.listForLanguage.rejects(validationError)
+
+        // when
+        response = await request(app)
+          .post('/authors/filter')
+          .type('form')
+          .send({ 'language': undefined })
+      })
+      it('should call the service without the parameter',()=>{
+          expect(authorService.listForLanguage).have.been.calledWith({language : undefined})
+      })
+      it('should succeed with a status 200',()=>{
+        expect(response).to.have.status(200)
+      })
+      it('should show the filter page with errors',()=>{
+        //const expectedErrorMessage = '&#34;language&#34; must be one of [french, english]'
+        const expectedErrorMessage2 = '&#34;language&#34; is required'
+        expect(response).to.be.html
+        expect(response.text).to.contain(expectedErrorMessage2)
+        //expect(response.text).to.contain(expectedErrorMessage)
+      })
+    })
+  })
 })
