@@ -32,6 +32,59 @@ module.exports = {
         }
       ],
       {})
+      return queryInterface.bulkInsert('Books',
+      [
+        {
+          authorId: 1,
+          title: 'Du contrat social',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 1,
+          title: 'Discours sur l\'origine et les fondements de l\'inégalité parmi les hommes',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 1,
+          title: 'Les Confessions',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 1,
+          title: 'Les rêveries du promeneur solitaire',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 2,
+          title: 'La Nausée',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 2,
+          title: 'L\'Être et le Néant',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 2,
+          title: 'L\'existentialisme est un humanisme',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 2,
+          title: 'Les Mots',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+      ],
+      {})
+  },
   },
 
   down: (queryInterface, Sequelize) => {

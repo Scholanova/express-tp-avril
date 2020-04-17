@@ -1,12 +1,13 @@
-
 const Joi = require('@hapi/joi')
 const { expect, request, sinon } = require('../testHelper')
 const { ResourceNotFoundError } = require('../../lib/errors')
 const app = require('../../lib/app')
 const authorRepository = require('../../lib/repositories/authorRepository')
+const bookRepository = require('../../lib/repositories/bookRepository')
 const authorService = require('../../lib/services/authorService')
 const models = require('../../lib/models')
 const Author = models.Author
+const Book = models.Book
 
 describe('authorRouter', () => {
 
@@ -71,6 +72,7 @@ describe('authorRouter', () => {
 
     beforeEach(() => {
       sinon.stub(authorRepository, 'get')
+      sinon.stub(bookRepository, 'listForAuthor')
     })
 
     context('when there is no author matching in the repository', () => {
@@ -108,12 +110,19 @@ describe('authorRouter', () => {
       beforeEach(async () => {
         // given
         authorId = '123'
+
         const authorData = {
           id: authorId, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch'
         }
         author = new Author(authorData)
 
+        const bookData = {
+          id: authorId, title: 'Jean-Jacques Rousseau le retour', authorId: 123
+        }
+        book = new Book(bookData)
+
         authorRepository.get.resolves(author)
+        bookRepository.listForAuthor.resolves([book])
 
         // when
         response = await request(app).get(`/authors/${authorId}`)
@@ -122,6 +131,7 @@ describe('authorRouter', () => {
       it('should call the repository with id', () => {
         // then
         expect(authorRepository.get).to.have.been.calledWith(authorId)
+        expect(bookRepository.listForAuthor).to.have.been.calledWith(authorId)
       })
 
       it('should succeed with a status 200', () => {
@@ -136,8 +146,53 @@ describe('authorRouter', () => {
         expect(response.text).to.contain(`Name: ${author.name}`)
         expect(response.text).to.contain(`Pseudo: ${author.pseudo}`)
         expect(response.text).to.contain(`Email: ${author.email}`)
+        expect(response.text).to.contain(`${book.title}`)
+        expect(response.text).to.contain(`Titres des livres ecrient`)
       })
     })
+
+    context('when there is a author matching in the repository but no books', () => {
+
+      let author
+
+      beforeEach(async () => {
+        // given
+        authorId = '123'
+
+        const authorData = {
+          id: authorId, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch'
+        }
+        author = new Author(authorData)
+
+        authorRepository.get.resolves(author)
+        bookRepository.listForAuthor.resolves([])
+
+        // when
+        response = await request(app).get(`/authors/${authorId}`)
+      })
+
+      it('should call the repository with id', () => {
+        // then
+        expect(authorRepository.get).to.have.been.calledWith(authorId)
+        expect(bookRepository.listForAuthor).to.have.been.calledWith(authorId)
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should return the show page with the author’s info', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain(`Author ${author.name}`)
+        expect(response.text).to.contain(`Name: ${author.name}`)
+        expect(response.text).to.contain(`Pseudo: ${author.pseudo}`)
+        expect(response.text).to.contain(`Email: ${author.email}`)
+        expect(response.text).to.contain(`Aucun livre trouvé pour l\'auteur.`)
+      })
+    })
+
   })
 
   describe('new - POST', () => {

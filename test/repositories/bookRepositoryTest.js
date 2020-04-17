@@ -70,11 +70,11 @@ describe('bookRepository', () => {
         })
     })
 
-    context('when create fail because no author associated to the book', () => {
+    context('when create fail because no author associated with the book', () => {
 
         beforeEach(async () => {
         // given
-        bookData = { title: 'les aventures de JP', authorId: 1}
+        bookData = { title: 'Les confessions', authorId: 1}
         })
 
         // then
@@ -84,4 +84,67 @@ describe('bookRepository', () => {
     })
   })
   
+  describe('listForAuthor', () => {
+    let result
+
+    context('when there is no book for that author in the repository only some for other authors', () => {
+
+      beforeEach(async () => {
+         // given
+         const authorData = { id: 1, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.fr', language: 'french' }
+         const authorData2 = { id: 2, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.fr', language: 'french' }
+
+         const bookData = { title: 'Les confessions', authorId: 1}
+         const bookData2 = { title: 'Les confessions', authorId: 1}
+
+         author = await authorRepository.create(authorData)
+         author2 = await authorRepository.create(authorData2)
+         createdBook = await bookRepository.create(bookData)
+         createdBook2 = await bookRepository.create(bookData2)
+
+         // when
+         result = await bookRepository.listForAuthor(authorData2.id)
+      })
+
+      it('should return an empty list', () => {
+        // then
+        expect(result).to.be.empty
+      })
+    })
+
+    context('when there are two books in the repository for that author and some for other authors', () => {
+
+      beforeEach(async () => {
+        // given
+        const authorData = { id: 1, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.fr', language: 'french' }
+        const authorData2 = { id: 2, name: 'un autre mec avec le meme pseudo', pseudo: 'JJR', email: 'jj@rousseau.fr', language: 'french' }
+
+        const bookData = { title: 'les aventures de JP', authorId: 1}
+        const bookData2 = { title: 'les aventures de JP2', authorId: 1}
+
+        const bookData3 = { title: 'un autre trucs', authorId: 2}
+
+
+        author = await authorRepository.create(authorData)
+        author2 = await authorRepository.create(authorData2)
+        createdBook = await bookRepository.create(bookData)
+        createdBook2 = await bookRepository.create(bookData2)
+        createdBook3 = await bookRepository.create(bookData3)
+
+
+        // when
+        result = await bookRepository.listForAuthor(authorData.id)
+      })
+
+      it('should return a list with the two books', () => {
+        // then
+        const book1Value = createdBook.get()
+        const book2Value = createdBook2.get()
+        const resultValues = result.map((book) => book.get())
+
+        expect(resultValues).to.deep.equal([book1Value, book2Value])
+      })
+    })
+  })
+
 })

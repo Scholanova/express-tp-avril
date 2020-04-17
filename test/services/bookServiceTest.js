@@ -23,7 +23,7 @@ describe('bookService', () => {
 
       beforeEach(() => {
         // given
-        bookData = { title: 'les aventures de jjr', authorId: 1 }
+        bookData = { title: 'Les confessions', authorId: 1 }
         book = new Book(bookData)
         bookRepository.create.resolves(book)
 
@@ -37,7 +37,7 @@ describe('bookService', () => {
         await bookCreationPromise.catch(() => {})
         expect(bookRepository.create).to.have.been.calledWith(bookData)
       })
-      it('should resolve with the created book from repository', () => {
+      it('should resolve with the created book from reprository', () => {
         // then
         return expect(bookCreationPromise).to.eventually.equal(book)
       })
@@ -58,7 +58,7 @@ describe('bookService', () => {
         await bookCreationPromise.catch(() => {})
         expect(bookRepository.create).to.not.have.been.called
       })
-      it('should reject with a ValidationError error about missing title', () => {
+      it('should reject with a ValidationError error about missing book title', () => {
         // then
         const expectedErrorDetails = [{
           message: '"title" is required',
@@ -73,7 +73,7 @@ describe('bookService', () => {
       })
     })
 
-    context('when the book title is empty', () => {
+    context('when the book name is empty', () => {
 
       beforeEach(() => {
         // given
@@ -88,7 +88,7 @@ describe('bookService', () => {
         await bookCreationPromise.catch(() => {})
         expect(bookRepository.create).to.not.have.been.called
       })
-      it('should reject with a ValidationError error about empty title', () => {
+      it('should reject with a ValidationError error about book name missing', () => {
         // then
         const expectedErrorDetails = [{
           message: '"title" is not allowed to be empty',
@@ -107,7 +107,7 @@ describe('bookService', () => {
 
         beforeEach(() => {
             // given
-            bookData = { title: 'La boucle', authorId: undefined }
+            bookData = { title: 'Bonsoir', authorId: undefined }
     
             // when
             bookCreationPromise = bookService.create(bookData)
@@ -118,7 +118,7 @@ describe('bookService', () => {
         await bookCreationPromise.catch(() => {})
         expect(bookRepository.create).to.not.have.been.called
       })
-      it('should reject with a ValidationError error about missing book', () => {
+      it('should reject with a ValidationError error about missing author id', () => {
         // then
         const expectedErrorDetails = [{
           message: '"authorId" is required',
@@ -137,7 +137,7 @@ describe('bookService', () => {
 
         beforeEach(() => {
             // given
-            bookData = { title: 'Zinzin', authorId: '' }
+            bookData = { title: 'Bonsoir', authorId: '' }
 
             // when
             bookCreationPromise = bookService.create(bookData)
@@ -148,7 +148,7 @@ describe('bookService', () => {
         await bookCreationPromise.catch(() => {})
         expect(bookRepository.create).to.not.have.been.called
       })
-      it('should reject with a ValidationError error about missing id', () => {
+      it('should reject with a ValidationError error about author id being empty', () => {
           // then
           const expectedErrorDetails = [{
             message: '"authorId" must be a number',
@@ -157,7 +157,6 @@ describe('bookService', () => {
             context: {
               label: 'authorId', key: 'authorId', value: ''
             },
-
           }]
 
           return expect(bookCreationPromise)
