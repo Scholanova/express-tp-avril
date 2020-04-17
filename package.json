@@ -10,7 +10,7 @@
     "db:migrate": "npx sequelize db:migrate",
     "db:seed": "npx sequelize db:seed:all",
     "db:reset": "npx sequelize db:drop && npm run db:init && npm run db:migrate",
-    "db:test:init": "NODE_ENV=test npx sequelize db:create",
+    "db:test:init": "SET NODE_ENV=test&& npx sequelize db:create",
     "db:test:reset": "NODE_ENV=test npx sequelize db:drop && npm run db:test:init"
   },
   "dependencies": {
