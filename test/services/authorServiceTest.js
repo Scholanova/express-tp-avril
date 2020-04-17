@@ -324,16 +324,11 @@ describe('authorService', () => {
         })
         it('should reject with a ValidationError error about missing language', () => {
           // then
-          const expectedErrorDetails = [{
-            context: { label: 'value'},
-            message: "\"value\" is required",
-            path: [],
-            type: 'any.required'
-          }]
-
+          const expectedErrorDetails = "\"value\" is required"
+          
           return expect(authorListPromise)
             .to.eventually.be.rejectedWith(Joi.ValidationError)
-            .with.deep.property('details', expectedErrorDetails)
+            .with.deep.property('message', expectedErrorDetails)
         })
       })
       context('when the author language is neither french nor english', () => {
