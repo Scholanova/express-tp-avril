@@ -39,7 +39,7 @@ describe('bookRepository', () => {
             beforeEach(async () => {
                 // given
                 let author = await Author.create({ id: 1234, name: 'Jean-Paul Sartre', pseudo: 'JPP', email: 'jp_sartre@academie-francaise.fr', language: 'french' });
-                createdBook = await Book.create({ authorId: author.id, title: 'L\'aube noir' })
+                createdBook = await Book.create({ authorId: author.id, title: 'Le bug' })
 
                 // when
                 getBookPromise = bookRepository.get(createdBook.id)
@@ -65,7 +65,7 @@ describe('bookRepository', () => {
 
             beforeEach(async () => {
                 // given
-                bookData = { authorId: 1234, title: 'L\'aube rouge' }
+                bookData = { authorId: 1234, title: 'Le bug' }
                             })
 
             it('should throw an error', () => {
@@ -80,7 +80,7 @@ describe('bookRepository', () => {
             beforeEach(async () => {
                 // given
                 let author = await Author.create({ id: 1234, name: 'Jean-Paul Sartre', pseudo: 'JPP', email: 'jp_sartre@academie-francaise.fr', language: 'french' });
-                bookData = { authorId: author.id, title: 'L\'aube rouge' }
+                bookData = { authorId: author.id, title: 'Le bug' }
 
                 // when
                 createdBook = await bookRepository.create(bookData)
