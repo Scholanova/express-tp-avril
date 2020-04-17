@@ -102,4 +102,51 @@ describe('bookRepository', () => {
 
     })
 
+    describe('listForAuthor', () => {
+
+        let listForAuthorPromise
+
+        context('author has books', () => {
+
+            let book1
+            let book2
+            
+
+            beforeEach(async() => {
+                // given
+                let author = await Author.create({ name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language: 'french' })
+                book1 = await Book.create({ authorId: author.id, title: 'L\'aube noir' })
+                book2 = await Book.create({ authorId: author.id, title: 'L\'aube rouge' })
+
+                // when
+                listForAuthorPromise = bookRepository.listForAuthor(author.id)
+            })
+
+            it('should return the two corresponding books', async () => {
+                 // then
+                let returnedBooks = await listForAuthorPromise;
+                let returnedBooksValue = returnedBooks.map( e => e.get());
+              
+                return expect(returnedBooksValue).to.deep.equal([book1.get(), book2.get()]);
+            })
+        })
+
+        context('author has no books', () => {            
+
+            beforeEach(async() => {
+                // given
+                let author = await Author.create({ name: 'Jean-Paul Sartre', pseudo: undefined, email: 'jp_sartre@academie-francaise.fr', language: 'french' })
+
+                // when
+                listForAuthorPromise = bookRepository.listForAuthor(author.id)
+            })
+
+            it('should return the two corresponding books', async () => {
+                // then
+                return expect(listForAuthorPromise).to.eventually.be.empty;
+            })
+        })
+
+    })
+
 })

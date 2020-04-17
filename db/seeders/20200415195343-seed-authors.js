@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
     /*
       Add altering commands here.
       Return a promise to correctly handle asynchronicity.
@@ -12,9 +12,10 @@ module.exports = {
         isBetaMember: false
       }], {});
     */
-    return queryInterface.bulkInsert('Authors',
+    await queryInterface.bulkInsert('Authors',
       [
         {
+          id: 1,
           name: 'Jean-Jacques Rousseau',
           pseudo: 'JJR',
           email: 'jj@rousseau.ch',
@@ -23,12 +24,66 @@ module.exports = {
           updatedAt: new Date('1778-07-02T03:56:00')
         },
         {
+          id: 2,
           name: 'Jean-Paul Sartre',
           pseudo: undefined,
           email: 'jp_sartre@academie-francaise.fr',
           language: 'french',
           createdAt: new Date('1905-06-21T10:31:00'),
           updatedAt: new Date('1980-04-15T21:01:00')
+        }
+      ],
+      {})
+
+    return queryInterface.bulkInsert('Books',
+      [
+        {
+          authorId: 1,
+          title: 'Du contrat social',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 1,
+          title: 'Discours sur l\'origine et les fondements de l\'inégalité parmi les hommes',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 1,
+          title: 'Les Confessions',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 1,
+          title: 'Les rêveries du promeneur solitaire',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 2,
+          title: 'La Nausée',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 2,
+          title: 'L\'Être et le Néant',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 2,
+          title: 'L\'existentialisme est un humanisme',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          authorId: 2,
+          title: 'Les Mots',
+          createdAt: new Date(),
+          updatedAt: new Date(),
         }
       ],
       {})
