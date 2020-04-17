@@ -64,16 +64,16 @@ describe('bookRepository', () => {
 
   describe('Get book', () => {
 
-    let falsegId
+    let Id
     let getBookPromise
 
     context('Book  not exist', () => {
       beforeEach(async () => {
         // given
-        falsegId = 19
+        Id = 55
 
         // when
-        getBookPromise = bookRepository.get(falsegId)
+        getBookPromise = bookRepository.get(Id)
       })
 
       it('should throw a not found error', () => {
