@@ -320,7 +320,7 @@ describe('authorService', () => {
       })
       it('should reject with a ValidationError error about missing language', () => {
         // then
-        const expectedErrorMessage = '"language" is required'
+        const expectedErrorMessage = '"value" must be one of [french, english]'
 
         return expect(authorListForLanguagePromise)
           .to.eventually.be.rejectedWith(Joi.ValidationError)
@@ -345,7 +345,7 @@ describe('authorService', () => {
       })
       it('should reject with a ValidationError error about unsupported language', () => {
         // then
-        const expectedErrorMessage = `"language" ${authorLanguage} is unsupported`
+        const expectedErrorMessage = `"value" must be one of [french, english]`
 
         return expect(authorListForLanguagePromise)
           .to.eventually.be.rejectedWith(Joi.ValidationError)
