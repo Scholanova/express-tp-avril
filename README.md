@@ -91,6 +91,26 @@ On va ajouter une ressource nouvelle (le livre) au système.
     L'URL sera de la forme `/authors/:id/books/new/`. Bien penser à ne pas donner à remplir à l'utilisateur l'id de l'auteur.
     Le seul champ à remplir de la part de l'utilisteur est donc titre. Si le titre n'est pas rempli, une erreur doit être affichée. 
     
+    
+## PARTIE 4 - MANIPULER DES LIVRES
+On va ajouter des règles pour les livres.
+
+- Étape 14 - Rajouter une règle qui empêche un auteur d'avoir plus de 5 livres différents.
+    - C'est une règle à mettre au niveau du service
+    - L'erreur doit apparaître au niveau du formulaire de création de livre comme avant.
+- Étape 15 - Rajouter une règle qui empêche un auteur deux fois un livre avec le même titre.
+    - C'est une règle à mettre au niveau du service aussi (il y a plusieurs choix, 
+    la règle pourrait être portée par la base de donnée, mais c'est plus censé à mon sens que ce soit au niveau du service
+    car ça rend les possibilités de modification de la règle plus facile.)
+    - L'erreur doit apparaître au niveau du formulaire de création de livre comme avant.
+- Étape 16 - Rajouter une page qui affiche tous les livres écrits dans une certaine langue (c'est-à-dire dont l'auteur écrit 
+dans la langue en question).
+    - Comme l'étape 7 / 8 / 9, il faut mettre en place une règle au niveau du service pour remonter une erreur si la langue 
+    n'est pas `french` ou `english`
+    - Le repository devra faire un inner-join pour remonter les livres en question. 
+    - Il faut qu'il y ait une page à part (`/books/filter`) avec un formulaire pour renseigner la langue. 
+     
+    
 ## AIDE POUR LA MIGRATION DE BASE DE DONNÉES
 
 Pour créer une nouvelle migration faites la commande suivante :
