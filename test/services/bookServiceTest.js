@@ -157,7 +157,6 @@ describe('bookService', () => {
             context: {
               label: 'authorId', key: 'authorId', value: ''
             },
-
           }]
 
           return expect(bookCreationPromise)
