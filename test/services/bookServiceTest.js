@@ -136,13 +136,53 @@ describe('bookService', () => {
 
         })
 
+        context('when author have 4 books', () => {
+            
+            beforeEach(() => {
+                // given
+                bookData = { authorId: 1234, title: 'L\'aube noir' }
+                sinon.stub(bookRepository, 'listForAuthor')
+                existingBookData = [];
+                for(let i = 1; i <= 4; i++) {
+                    existingBookData.push({
+                        id: i,
+                        authorId: 1234,
+                        title: `title${i}`
+                    })
+                }
+                bookRepository.listForAuthor.resolves(existingBookData.map(e => new Book(e)))
+                book = new Book(bookData)
+                bookRepository.create.resolves(book)
+
+                // when
+                bookCreationPromise = bookService.create(bookData)
+            })
+
+            it('should call the book Repository ', async () => {
+                // then
+                await bookCreationPromise.catch(() => {})
+                expect(bookRepository.create).to.have.been.calledWith(bookData)
+            })
+            it('should resolve with the created author from reprository', () => {
+                return expect(bookCreationPromise).to.eventually.equal(book)
+            })
+        })
+
         context('when author have already 5 books', () => {
             
             beforeEach(() => {
                 // given
                 bookData = { authorId: 1234, title: 'L\'aube noir' }
                 sinon.stub(bookRepository, 'listForAuthor')
-                bookRepository.listForAuthor.resolves([1, 2, 3, 4, 5])
+                existingBookData = [];
+                for(let i = 1; i <= 5; i++) {
+                    existingBookData.push({
+                        id: i,
+                        authorId: 1234,
+                        title: `title${i}`
+                    })
+                }
+                bookRepository.listForAuthor.resolves(existingBookData.map(e => new Book(e)))
 
                 // when
                 bookCreationPromise = bookService.create(bookData)
@@ -157,9 +197,9 @@ describe('bookService', () => {
                 // then
                 const expectedErrorDetails = [{
                   message: 'Author cannot have more than 5 books',
-                  path: [],
-                  type: 'number.max',
-                  context: { label: 'value', limit: 4, value: 5 }
+                  path: ["title"],
+                  type: 'array.max',
+                  context: { label: 'value', limit: 5, value: [...existingBookData, bookData] }
                 }]
         
                 return expect(bookCreationPromise)
@@ -188,12 +228,29 @@ describe('bookService', () => {
             })
             it('should reject with a ValidationError error already got a book with this title', () => {
                 // then
-                const expectedErrorDetails = [{
-                  message: `Book ${bookData.title} already exist`,
-                  path: [],
-                  type: 'any.invalid',
-                  context: { invalids: [bookData.title], label: 'value', value: bookData.title }
-                }]
+                const expectedErrorDetails = [
+                    {
+                        "context": {
+                            "dupePos": 0,
+                            "dupeValue": {
+                                "authorId": bookData.authorId,
+                                "id": null,
+                                "title": bookData.title
+                            },
+                            "key": 1,
+                            "label": "[1]",
+                            "path": "title",
+                            "pos": 1,
+                            "value": {
+                                "authorId": bookData.authorId,
+                                "title": bookData.title
+                            }
+                        },
+                        "message": "Duplicated book",
+                        "path": [ "title" ],
+                        "type": "array.unique"
+                    }
+                ]
         
                 return expect(bookCreationPromise)
                   .to.eventually.be.rejectedWith(Joi.ValidationError)

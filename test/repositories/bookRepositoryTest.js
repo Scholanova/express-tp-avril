@@ -84,18 +84,13 @@ describe('bookRepository', () => {
 
                 // when
                 createdBook = await bookRepository.create(bookData)
-                let a = await createdBook.getAuthor();
+                let a = await author.getBooks();
             })
 
             it('should return a book with the right properties', () => {
                 const createdBookValue = createdBook.get()
             
                 expect(createdBookValue.title).to.equal(bookData.title)
-                
-                // retrievedAuthor = await authorRepository.get(createdAuthor.id)
-                // const retrievedAuthorValue = retrievedAuthor.get()
-                
-                // expect(createdAuthorValue).to.deep.equal(retrievedAuthorValue)
             })
             
         })
