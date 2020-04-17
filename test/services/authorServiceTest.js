@@ -294,16 +294,39 @@ describe('authorService', () => {
     })
   })
 
-  describe.skip('listForLanguage', () => {
-    describe.skip('listForLanguage', () => {
+  
+    describe('listForLanguage', () => {
       let result
 
-      context.skip('when the author language is missing', () => {
+      beforeEach(() => {
+        sinon.stub(authorRepository, 'listForLanguage')
+      })
+
+      context('when the author language is missing', () => {
+        beforeEach(()=>{
+          // given
+          // when
+          result = authorService.listForLanguage({language : undefined})
+        })
+        
         it('should not call the author Repository', async () => {
           // then
+          await result.catch(() => {})
+          expect(authorRepository.listForLanguage).to.not.have.been.called
+
         })
-        it('should reject with a ValidationError error about missing language', () => {
+        it('should reject with a ValidationError error about missing language', ()  => {
           // then
+          const expectedErrorDetails = [{
+            message: '"language" is required',
+            path: ['language'],
+            type: 'any.required',
+            context: { label: 'language', key: 'language' }
+          }]
+  
+          return expect(result)
+            .to.eventually.be.rejectedWith(Joi.ValidationError)
+            .with.deep.property('details', expectedErrorDetails)
         })
       })
       context.skip('when the author language is neither french nor english', () => {
@@ -324,5 +347,4 @@ describe('authorService', () => {
         })
       })
     })
-  })
 })
