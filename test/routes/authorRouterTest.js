@@ -5,6 +5,7 @@ const app = require('../../lib/app')
 const authorRepository = require('../../lib/repositories/authorRepository')
 const bookRepository = require('../../lib/repositories/bookRepository')
 const authorService = require('../../lib/services/authorService')
+const bookService = require('../../lib/services/bookService')
 const models = require('../../lib/models')
 const Author = models.Author
 const Book = models.Book
@@ -402,4 +403,95 @@ describe('authorRouter', () => {
       })
     })
   })
+
+  describe('new book - POST', () => {
+
+    let response
+
+    beforeEach(() => {
+      sinon.stub(bookService, 'create')
+    })
+
+    context('when the book creation succeeds', () => {
+
+      let book
+
+      beforeEach(async () => {
+        // given
+        book = new Book({ id: 1, title: 'Ben', authorId: 3 })
+        bookService.create.resolves(book)
+
+        // when
+        response = await request(app)
+          .post('/authors/3/books/new')
+          .type('form')
+          .send({ 'title': 'ben', 'authorId': '3' })
+          .redirects(0)
+      })
+
+      it('should call the service with book data', () => {
+        // then
+        expect(bookService.create).to.have.been.calledWith({ title: 'ben', authorId: '3' })
+      })
+
+      it('should succeed with a status 302', () => {
+        // then
+        expect(response).to.have.status(302)
+      })
+
+      it('should redirect to show page', () => {
+        // then
+        expect(response).to.redirectTo(`/authors/${book.authorId}`)
+      })
+    })
+
+    context('when the book creation fails with validation errors', () => {
+
+      let validationError
+      let errorMessage
+      let errorDetails
+      let previousTitleValue
+
+      beforeEach(async () => {
+        // given
+        errorDetails = [{
+          message: '"title" is required',
+          path: ['title'],
+          type: 'any.required',
+          context: { label: 'title', key: 'title' }
+        }]
+        errorMessage = '"title" is required'
+        validationError = new Joi.ValidationError(errorMessage, errorDetails, undefined)
+        bookService.create.rejects(validationError)
+
+        previousTitleValue = 'manger des pommes'
+        // when
+        response = await request(app)
+        .post('/authors/3/books/new')
+        .type('form')
+        .send({ 'title': previousTitleValue, 'authorId': '3' })
+        .redirects(0)
+      })
+
+      it('should call the service with author data', () => {
+        // then
+        expect(bookService.create).to.have.been.calledWith({
+          title: previousTitleValue, authorId: '3'
+        })
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should show new book page with error message and previous values', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain('New Book')
+        expect(response.text).to.contain('&#34;title&#34; is required')
+      })
+    })
+  })
+
 })
