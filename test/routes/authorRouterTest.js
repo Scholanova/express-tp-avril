@@ -3,9 +3,11 @@ const { expect, request, sinon } = require('../testHelper')
 const { ResourceNotFoundError } = require('../../lib/errors')
 const app = require('../../lib/app')
 const authorRepository = require('../../lib/repositories/authorRepository')
+const bookRepository = require('../../lib/repositories/bookRepository')
 const authorService = require('../../lib/services/authorService')
 const models = require('../../lib/models')
 const Author = models.Author
+const Book = models.Book
 
 describe('authorRouter', () => {
 
@@ -66,10 +68,12 @@ describe('authorRouter', () => {
   describe('show', () => {
 
     let authorId
+    let bookId
     let response
 
     beforeEach(() => {
       sinon.stub(authorRepository, 'get')
+      sinon.stub(bookRepository, 'listForAuthor')
     })
 
     context('when there is no author matching in the repository', () => {
@@ -87,6 +91,10 @@ describe('authorRouter', () => {
         // then
         expect(authorRepository.get).to.have.been.calledWith(authorId)
       })
+      it('should not call the book repository with author id', () => {
+        // then
+        expect(bookRepository.listForAuthor).to.have.not.been.called
+      })
 
       it('should succeed with a status 404', () => {
         // then
@@ -100,7 +108,7 @@ describe('authorRouter', () => {
       })
     })
 
-    context('when there is a author matching in the repository', () => {
+    context('when there is a author matching and no books in the repository', () => {
 
       let author
 
@@ -114,13 +122,19 @@ describe('authorRouter', () => {
 
         authorRepository.get.resolves(author)
 
+        bookRepository.listForAuthor.resolves([])
+
         // when
         response = await request(app).get(`/authors/${authorId}`)
       })
 
-      it('should call the repository with id', () => {
+      it('should call the author repository with id', () => {
         // then
         expect(authorRepository.get).to.have.been.calledWith(authorId)
+      })
+      it('should call the book repository with authorId', () => {
+        // then
+        expect(bookRepository.listForAuthor).to.have.been.calledWith(authorId)
       })
 
       it('should succeed with a status 200', () => {
@@ -137,7 +151,66 @@ describe('authorRouter', () => {
         expect(response.text).to.contain(`Email: ${author.email}`)
       })
     })
+
+    context('when there are books for an author in the repository', () => {
+      let author
+      let book
+
+      beforeEach(async () => {
+        // given
+        authorId = '123'
+        const authorData = {
+          id: authorId, name: 'Jean-Jacques Rousseau', pseudo: 'JJR', email: 'jj@rousseau.ch'
+        }
+        author = new Author(authorData)
+
+        authorRepository.get.resolves(author)
+
+        bookId= '1'
+        const bookData = {
+          id: bookId, title: 'bookTitle', authorId: authorId
+        }
+        book = new Book(bookData)
+
+        bookRepository.listForAuthor.resolves([book])
+
+        // when
+        response = await request(app).get(`/authors/${authorId}`)
+      })
+
+      it('should call the author repository with id', () => {
+        // then
+        expect(authorRepository.get).to.have.been.calledWith(authorId)
+      })
+      it('should call the book repository with authorId', () => {
+        // then
+        expect(bookRepository.listForAuthor).to.have.been.calledWith(authorId)
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should return the show page with the author’s info', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain(`Author ${author.name}`)
+        expect(response.text).to.contain(`Name: ${author.name}`)
+        expect(response.text).to.contain(`Pseudo: ${author.pseudo}`)
+        expect(response.text).to.contain(`Email: ${author.email}`)
+      })
+      it('should return the show page with the authors books info', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain(`${book.title}`)
+      })
+    })
   })
+
+
+
+
 
   describe('new - POST', () => {
 
