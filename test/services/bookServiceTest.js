@@ -136,7 +136,6 @@ describe('bookService', () => {
 
         })
 
-
         context('when author have already 5 books', () => {
             
             beforeEach(() => {
@@ -161,6 +160,39 @@ describe('bookService', () => {
                   path: [],
                   type: 'number.max',
                   context: { label: 'value', limit: 4, value: 5 }
+                }]
+        
+                return expect(bookCreationPromise)
+                  .to.eventually.be.rejectedWith(Joi.ValidationError)
+                  .with.deep.property('details', expectedErrorDetails)
+            })
+        })
+
+        context('when author have already a book with the same title', () => {
+            
+            beforeEach(() => {
+                // given
+                bookData = { authorId: 1234, title: 'L\'aube noir' }
+                sinon.stub(bookRepository, 'listForAuthor')
+                const duplicatedBook = new Book(bookData)
+                bookRepository.listForAuthor.resolves([duplicatedBook])
+
+                // when
+                bookCreationPromise = bookService.create(bookData)
+            })
+
+            it('should not call the book Repository ', async () => {
+                // then
+                await bookCreationPromise.catch(() => {})
+                expect(bookRepository.create).to.not.have.been.calledWith(bookData)
+            })
+            it('should reject with a ValidationError error already got a book with this title', () => {
+                // then
+                const expectedErrorDetails = [{
+                  message: `Book ${bookData.title} already exist`,
+                  path: [],
+                  type: 'any.invalid',
+                  context: { invalids: [bookData.title], label: 'value', value: bookData.title }
                 }]
         
                 return expect(bookCreationPromise)
