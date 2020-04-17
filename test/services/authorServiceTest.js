@@ -329,21 +329,49 @@ describe('authorService', () => {
             .with.deep.property('details', expectedErrorDetails)
         })
       })
-      context.skip('when the author language is neither french nor english', () => {
-
+      context('when the author language is neither french nor english', () => {
+        beforeEach(()=>{
+          // given
+          // when
+          result = authorService.listForLanguage({language : 'demoniac'})
+        })
         it('should not call the author Repository', async () => {
           // then
+          await result.catch(() => {})
+          expect(authorRepository.listForLanguage).to.not.have.been.called
         })
         it('should reject with a ValidationError error about unsupported language', () => {
           // then
+          const expectedErrorDetails = [{
+            message: '"language" must be one of [french, english]',
+            path: ['language'],
+            type: 'any.only',
+            context: { label: 'language', key: 'language', valids: ['french', 'english'], 'value': 'demoniac' }
+          }]
+  
+          return expect(result)
+            .to.eventually.be.rejectedWith(Joi.ValidationError)
+            .with.deep.property('details', expectedErrorDetails)
         })
       })
-      context.skip('when the author language is either french or english', () => {
+      context('when the author language is either french or english', () => {
+        beforeEach(()=>{
+          // given
+          authorData = { name: 'Doom Slayer', pseudo: 'Doom Guy', email: 'doom.slayer@ripandtear.fr', language: 'french' }
+          author = authorService.create(authorData)
+          authorRepository.listForLanguage.resolves([author])
+          languageCriteria = 'french'
+          // when
+          result = authorService.listForLanguage({language : languageCriteria})
+        })
         it('should call the author Repository with the language', async () => {
           // then
+          await result.catch(() => {})
+          expect(authorRepository.listForLanguage).to.have.been.calledWith(languageCriteria)
         })
         it('should resolve with the authors listed from reprository', () => {
           // then
+          return expect(result).to.eventually.deep.equal([author])
         })
       })
     })
