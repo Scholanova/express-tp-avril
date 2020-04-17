@@ -112,7 +112,7 @@ describe('authorRepository', () => {
 
       beforeEach(async () => {
         // given
-        result = await authorRepository.listForLanguage('french')
+        result = await authorRepository.listForLanguage({language:'french'})
         // when
       })
 
@@ -134,7 +134,7 @@ describe('authorRepository', () => {
         author3 = await authorRepository.create(epData)
 
         // when
-        result = await authorRepository.listForLanguage('french')
+        result = await authorRepository.listForLanguage({language:'french'})
       })
 
       it('should return a list with the two authors', () => {
