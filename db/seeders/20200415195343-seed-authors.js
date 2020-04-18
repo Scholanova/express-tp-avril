@@ -15,7 +15,10 @@ module.exports = {
     return queryInterface.bulkInsert('Authors',
       [
         {
-          id: 1,
+          // Id 100001 pour avoir un id fixe pour mettre dans books
+          // Mais fixer l'id en bulk insert ne modifie par l'auto-increment naturel de postgres
+          // Pour qu'il n'y ait pas de conflit, l'id est mis à "très grand"
+          id: 100001,
           name: 'Jean-Jacques Rousseau',
           pseudo: 'JJR',
           email: 'jj@rousseau.ch',
@@ -24,7 +27,7 @@ module.exports = {
           updatedAt: new Date('1778-07-02T03:56:00')
         },
         {
-          id: 2,
+          id: 100002,
           name: 'Jean-Paul Sartre',
           pseudo: undefined,
           email: 'jp_sartre@academie-francaise.fr',

@@ -15,23 +15,23 @@ module.exports = {
     return queryInterface.bulkInsert('Books',
       [
         {
-          id: 1,
+          id: 100001,
           title: 'Les confessions',
-          authorId: 1,
+          authorId: 100001,
           createdAt: new Date('1813-01-01T12:00:00'),
           updatedAt: new Date('1813-01-01T12:00:00')
         },
         {
-          id: 2,
+          id: 100002,
           title: 'La Profession de foi du vicaire savoyard',
-          authorId: 1,
+          authorId: 100001,
           createdAt: new Date('1762-10-10T12:00:00'),
           updatedAt: new Date('1762-10-10T12:00:00')
         },
         {
-          id: 3,
+          id: 100003,
           title: 'L’Être et le Néant',
-          authorId: 2,
+          authorId: 100002,
           createdAt: new Date('1943-03-13T12:00:00'),
           updatedAt: new Date('1943-03-13T21:01:00')
         }

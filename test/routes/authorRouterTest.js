@@ -5,6 +5,7 @@ const app = require('../../lib/app')
 const authorRepository = require('../../lib/repositories/authorRepository')
 const bookRepository = require('../../lib/repositories/bookRepository')
 const authorService = require('../../lib/services/authorService')
+const bookService = require('../../lib/services/bookService')
 const models = require('../../lib/models')
 const Author = models.Author
 
@@ -164,8 +165,8 @@ describe('authorRouter', () => {
         // given
         authorId = '123'
         author = factory.createAuthor({ id: authorId })
-        book1 = factory.createBook({ title: "Book1", authorId: authorId })
-        book2 = factory.createBook({ title: "Book2", authorId: authorId })
+        book1 = factory.createBook({ title: 'Book1', authorId: authorId })
+        book2 = factory.createBook({ title: 'Book2', authorId: authorId })
 
         authorRepository.get.resolves(author)
         bookRepository.listForAuthor.resolves([book1, book2])
@@ -449,6 +450,194 @@ describe('authorRouter', () => {
         expect(response).to.be.html
         expect(response.text).to.contain(filterLanguage)
         expect(response.text).to.contain(expectedErrorMessage)
+      })
+    })
+  })
+
+  describe('new Book - GET', () => {
+
+    let authorId
+    let response
+
+    beforeEach(() => {
+      sinon.stub(authorRepository, 'get')
+    })
+
+    context('when there is no author matching in the repository', () => {
+
+      beforeEach(async () => {
+        // given
+        authorId = '123'
+        authorRepository.get.rejects(new ResourceNotFoundError())
+
+        // when
+        response = await request(app).get(`/authors/${authorId}/books/new`)
+      })
+
+      it('should call the author repository with id', () => {
+        // then
+        expect(authorRepository.get).to.have.been.calledWith(authorId)
+      })
+
+      it('should succeed with a status 404', () => {
+        // then
+        expect(response).to.have.status(404)
+      })
+
+      it('should return the resource not found page', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain('This page does not exist')
+      })
+    })
+
+    context('when there is a author matching in the repository', () => {
+
+      let author
+
+      beforeEach(async () => {
+        // given
+        authorId = '123'
+        author = factory.createAuthor({ id: authorId })
+
+        authorRepository.get.resolves(author)
+
+        // when
+        response = await request(app).get(`/authors/${authorId}/books/new`)
+      })
+
+      it('should call the author repository with id', () => {
+        // then
+        expect(authorRepository.get).to.have.been.calledWith(authorId)
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should return the new book page with the author’s name', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain(`Create a new book for ${author.name}`)
+      })
+    })
+  })
+
+  describe('new Book - POST', () => {
+
+    let response
+
+    beforeEach(() => {
+      sinon.stub(authorRepository, 'get')
+      sinon.stub(bookService, 'create')
+    })
+
+    context('when the book creation succeeds', () => {
+
+      let authorId, bookTitle, book
+
+      beforeEach(async () => {
+        // given
+        bookTitle = 'Germinal'
+        authorId = '213'
+        book = factory.createBook({ title: bookTitle, authorId })
+
+        bookService.create.resolves(book)
+
+        // when
+        response = await request(app)
+          .post(`/authors/${authorId}/books/new`)
+          .type('form')
+          .send({ 'title': bookTitle })
+          .redirects(0)
+      })
+
+      it('should call the service with author id and book data', () => {
+        // then
+        expect(bookService.create).to.have.been.calledWith({
+          authorId: authorId,
+          title: bookTitle
+        })
+      })
+
+      it('should not call the author repository', () => {
+        // then
+        expect(authorRepository.get).to.not.have.been.called
+      })
+
+      it('should succeed with a status 302', () => {
+        // then
+        expect(response).to.have.status(302)
+      })
+
+      it('should redirect to author show page', () => {
+        // then
+        expect(response).to.redirectTo(`/authors/${authorId}`)
+      })
+    })
+
+    context('when the book creation fails with validation errors', () => {
+
+      let validationError
+      let errorMessage
+      let errorDetails
+
+      let authorId
+      let authorName
+      let bookTitle
+
+      beforeEach(async () => {
+        // given
+        errorDetails = [{
+          message: '"title" is required',
+          path: ['title'],
+          type: 'any.required',
+          context: { label: 'title', key: 'title' }
+        }]
+        errorMessage = '"title" is required'
+        validationError = new Joi.ValidationError(errorMessage, errorDetails, undefined)
+
+        authorId = '1243'
+        authorName = 'Émile Zola'
+        bookTitle = 'Germinal'
+        const author = factory.createAuthor({ id: authorId, name: authorName })
+
+        authorRepository.get.resolves(author)
+        bookService.create.rejects(validationError)
+
+        // when
+        response = await request(app)
+          .post(`/authors/${authorId}/books/new`)
+          .type('form')
+          .send({ 'title': bookTitle })
+          .redirects(0)
+      })
+
+      it('should call the service with author data', () => {
+        // then
+        expect(bookService.create).to.have.been.calledWith({
+          authorId: authorId,
+          title: bookTitle
+        })
+      })
+
+      it('should call the author repository with id', () => {
+        // then
+        expect(authorRepository.get).to.have.been.calledWith(authorId)
+      })
+
+      it('should succeed with a status 200', () => {
+        // then
+        expect(response).to.have.status(200)
+      })
+
+      it('should show new author page with error message and previous values', () => {
+        // then
+        expect(response).to.be.html
+        expect(response.text).to.contain(`Create a new book for ${authorName}`)
+        expect(response.text).to.contain('&#34;title&#34; is required')
+        expect(response.text).to.contain(bookTitle)
       })
     })
   })
