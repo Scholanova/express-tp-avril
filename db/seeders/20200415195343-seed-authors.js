@@ -15,6 +15,7 @@ module.exports = {
     return queryInterface.bulkInsert('Authors',
       [
         {
+          id: 1,
           name: 'Jean-Jacques Rousseau',
           pseudo: 'JJR',
           email: 'jj@rousseau.ch',
@@ -23,6 +24,7 @@ module.exports = {
           updatedAt: new Date('1778-07-02T03:56:00')
         },
         {
+          id: 2,
           name: 'Jean-Paul Sartre',
           pseudo: undefined,
           email: 'jp_sartre@academie-francaise.fr',

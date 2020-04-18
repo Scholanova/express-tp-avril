@@ -83,4 +83,57 @@ describe('bookRepository', () => {
       })
     })
   })
+
+  describe('listForAuthor', () => {
+    let result
+
+    context('when there is are no books for that author in the repository, only some for other authors', () => {
+
+      beforeEach(async () => {
+        // given
+        const author1 = await authorRepository.create(factory.createAuthorData())
+        const author2 = await authorRepository.create(factory.createAuthorData())
+
+        // create somme books for author2
+        await bookRepository.create(factory.createBookData({ authorId: author2.id }))
+        await bookRepository.create(factory.createBookData({ authorId: author2.id }))
+
+        // when
+        result = await bookRepository.listForAuthor(author1.id)
+      })
+
+      it('should return an empty list', () => {
+        // then
+        expect(result).to.be.empty
+      })
+    })
+
+    context('when there are two books for that author and some for other authors', () => {
+
+      let book1, book2
+
+      beforeEach(async () => {
+        // given
+        const author1 = await authorRepository.create(factory.createAuthorData())
+        const author2 = await authorRepository.create(factory.createAuthorData())
+
+        // create somme books for author2
+        book1 = await bookRepository.create(factory.createBookData({ authorId: author1.id }))
+        book2 = await bookRepository.create(factory.createBookData({ authorId: author1.id }))
+        await bookRepository.create(factory.createBookData({ authorId: author2.id }))
+
+        // when
+        result = await bookRepository.listForAuthor(author1.id)
+      })
+
+      it('should return a list with the two books', () => {
+        // then
+        const book1Value = book1.get()
+        const book2Value = book2.get()
+        const resultValues = result.map((book) => book.get())
+
+        expect(resultValues).to.deep.equal([book1Value, book2Value])
+      })
+    })
+  })
 })

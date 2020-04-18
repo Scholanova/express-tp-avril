@@ -21,14 +21,14 @@ const factory = {
     return new Author({ id, name, pseudo, email, language })
   },
   createBookData: ({
-    title = 'Les confessions du vicaire savoyard',
+    title = 'La Profession de foi du vicaire savoyard',
     authorId = 231
   } = {}) => {
     return { title, authorId }
   },
   createBook: ({
     id = 756,
-    title = 'Les confessions du vicaire savoyard',
+    title = 'La Profession de foi du vicaire savoyard',
     authorId = 231
   } = {}) => {
     return new Book({ id, title, authorId })
