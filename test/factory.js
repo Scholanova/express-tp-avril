@@ -1,5 +1,6 @@
 const models = require('../lib/models')
 const Author = models.Author
+const Book = models.Book
 
 const factory = {
   createAuthorData: ({
@@ -17,7 +18,20 @@ const factory = {
     email = 'jj@rousseau.ch',
     language = 'french'
   } = {}) => {
-    return new Author({id,  name, pseudo, email, language })
+    return new Author({ id, name, pseudo, email, language })
+  },
+  createBookData: ({
+    title = 'Les confessions du vicaire savoyard',
+    authorId = 231
+  } = {}) => {
+    return { title, authorId }
+  },
+  createBook: ({
+    id = 756,
+    title = 'Les confessions du vicaire savoyard',
+    authorId = 231
+  } = {}) => {
+    return new Book({ id, title, authorId })
   }
 }
 
